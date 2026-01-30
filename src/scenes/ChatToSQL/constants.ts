@@ -126,7 +126,7 @@ export const LAYOUT = {
   chatBubbleY1: 350,      // First position (after first transition)
   chatBubbleY2: 225,      // Second position (when SQL card appears below)
   statusIndicatorTop: 310, // Position for status indicators (below bubble with more spacing)
-  sqlCardWidth: 1040,     // Full width (1200 - 80 - 80 padding)
+  sqlCardWidth: 804,      // Card width
   sqlCardLeft: 80,        // Left margin for SQL card
   sqlCardTop: 300,        // SQL card Y position
   padding: 40,

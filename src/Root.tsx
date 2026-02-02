@@ -1,8 +1,10 @@
 import "./index.css";
 import { Composition, Folder } from "remotion";
 import { ChatToSQLScene } from "./scenes/ChatToSQL";
+import { ChatToSQLVoiceModeScene } from "./scenes/ChatToSQLVoiceMode";
 import { ChatToDAUScene } from "./scenes/ChatToDAU";
 import { MobileNotificationScene } from "./scenes/MobileNotification";
+import { MobileNotificationCompactScene } from "./scenes/MobileNotificationCompact";
 
 // Each <Composition> is an entry in the sidebar!
 
@@ -15,6 +17,14 @@ export const RemotionRoot: React.FC = () => {
           id="ChatToSQL"
           component={ChatToSQLScene}
           durationInFrames={370}
+          fps={30}
+          width={1200}
+          height={900}
+        />
+        <Composition
+          id="ChatToSQLVoiceMode"
+          component={ChatToSQLVoiceModeScene}
+          durationInFrames={450}
           fps={30}
           width={1200}
           height={900}
@@ -34,6 +44,14 @@ export const RemotionRoot: React.FC = () => {
           fps={30}
           width={360}
           height={780}
+        />
+        <Composition
+          id="MobileNotificationCompact"
+          component={MobileNotificationCompactScene}
+          durationInFrames={120}
+          fps={30}
+          width={360}
+          height={550}
         />
       </Folder>
     </>

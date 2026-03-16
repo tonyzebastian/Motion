@@ -5,6 +5,9 @@ import { ChatToSQLVoiceModeScene } from "./scenes/ChatToSQLVoiceMode";
 import { ChatToDAUScene } from "./scenes/ChatToDAU";
 import { MobileNotificationScene } from "./scenes/MobileNotification";
 import { MobileNotificationCompactScene } from "./scenes/MobileNotificationCompact";
+import { ForwardDeploymentScene } from "./scenes/ForwardDeployment";
+import { RichContextScene } from "./scenes/RichContext";
+import { GoldenTableScene } from "./scenes/GoldenTable";
 
 // Each <Composition> is an entry in the sidebar!
 
@@ -52,6 +55,30 @@ export const RemotionRoot: React.FC = () => {
           fps={30}
           width={360}
           height={550}
+        />
+        <Composition
+          id="ForwardDeployment"
+          component={ForwardDeploymentScene}
+          durationInFrames={180}
+          fps={30}
+          width={600}
+          height={600}
+        />
+        <Composition
+          id="RichContextAnimation"
+          component={RichContextScene}
+          durationInFrames={510}
+          fps={30}
+          width={600}
+          height={600}
+        />
+        <Composition
+          id="GoldenTable"
+          component={GoldenTableScene}
+          durationInFrames={288}
+          fps={30}
+          width={600}
+          height={600}
         />
       </Folder>
     </>

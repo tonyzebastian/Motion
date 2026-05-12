@@ -8,6 +8,7 @@ import { MobileNotificationCompactScene } from "./scenes/MobileNotificationCompa
 import { ForwardDeploymentScene } from "./scenes/ForwardDeployment";
 import { RichContextScene } from "./scenes/RichContext";
 import { GoldenTableScene } from "./scenes/GoldenTable";
+import { PlaybooksScene } from "./scenes/Playbooks";
 
 // Each <Composition> is an entry in the sidebar!
 
@@ -79,6 +80,18 @@ export const RemotionRoot: React.FC = () => {
           fps={30}
           width={600}
           height={600}
+        />
+      </Folder>
+
+      {/* Product Video Scenes */}
+      <Folder name="ProductVideos">
+        <Composition
+          id="Playbooks"
+          component={PlaybooksScene}
+          durationInFrames={1310}
+          fps={30}
+          width={1280}
+          height={900}
         />
       </Folder>
     </>

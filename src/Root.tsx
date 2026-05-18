@@ -9,6 +9,8 @@ import { ForwardDeploymentScene } from "./scenes/ForwardDeployment";
 import { RichContextScene } from "./scenes/RichContext";
 import { GoldenTableScene } from "./scenes/GoldenTable";
 import { PlaybooksScene } from "./scenes/Playbooks";
+import { PlaybooksAngle2Scene } from "./scenes/PlaybooksAngle2";
+import { PlaybooksAngle2_1Scene } from "./scenes/PlaybooksAngle2_1";
 
 // Each <Composition> is an entry in the sidebar!
 
@@ -89,6 +91,22 @@ export const RemotionRoot: React.FC = () => {
           id="Playbooks"
           component={PlaybooksScene}
           durationInFrames={1310}
+          fps={30}
+          width={1280}
+          height={900}
+        />
+        <Composition
+          id="PlaybooksAngle2"
+          component={PlaybooksAngle2Scene}
+          durationInFrames={380}
+          fps={30}
+          width={1280}
+          height={900}
+        />
+        <Composition
+          id="PlaybooksAngle2-1"
+          component={PlaybooksAngle2_1Scene}
+          durationInFrames={380}
           fps={30}
           width={1280}
           height={900}

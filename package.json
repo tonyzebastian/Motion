@@ -6,7 +6,9 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
+    "@paper-design/shaders-react": "^0.0.76",
     "@remotion/cli": "4.0.459",
+    "@remotion/google-fonts": "^4.0.459",
     "@remotion/tailwind-v4": "4.0.459",
     "@remotion/zod-types": "4.0.459",
     "lucide-react": "^1.14.0",

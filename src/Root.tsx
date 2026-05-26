@@ -9,8 +9,11 @@ import { ForwardDeploymentScene } from "./scenes/ForwardDeployment";
 import { RichContextScene } from "./scenes/RichContext";
 import { GoldenTableScene } from "./scenes/GoldenTable";
 import { PlaybooksScene } from "./scenes/Playbooks";
+import { PlaybooksCleanScene } from "./scenes/PlaybooksClean";
 import { PlaybooksAngle2Scene } from "./scenes/PlaybooksAngle2";
 import { PlaybooksAngle2_1Scene } from "./scenes/PlaybooksAngle2_1";
+import { PlaybooksTrustSignalScene } from "./scenes/PlaybooksTrustSignal";
+import { SundialReel2026Scene } from "./scenes/SundialReel2026";
 
 // Each <Composition> is an entry in the sidebar!
 
@@ -96,6 +99,14 @@ export const RemotionRoot: React.FC = () => {
           height={900}
         />
         <Composition
+          id="PlaybooksClean"
+          component={PlaybooksCleanScene}
+          durationInFrames={1310}
+          fps={30}
+          width={1120}
+          height={720}
+        />
+        <Composition
           id="PlaybooksAngle2"
           component={PlaybooksAngle2Scene}
           durationInFrames={380}
@@ -110,6 +121,26 @@ export const RemotionRoot: React.FC = () => {
           fps={30}
           width={1280}
           height={900}
+        />
+        <Composition
+          id="PlaybooksTrustSignal"
+          component={PlaybooksTrustSignalScene}
+          durationInFrames={640}
+          fps={60}
+          width={1280}
+          height={900}
+        />
+      </Folder>
+
+      {/* Reels */}
+      <Folder name="Reels">
+        <Composition
+          id="SundialReel2026"
+          component={SundialReel2026Scene}
+          durationInFrames={3600}
+          fps={60}
+          width={1920}
+          height={1080}
         />
       </Folder>
     </>

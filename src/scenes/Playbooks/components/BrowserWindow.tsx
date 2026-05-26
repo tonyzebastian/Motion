@@ -14,6 +14,14 @@ type BrowserWindowProps = {
   url?: string;
   /** Body content rendered below the header. */
   children?: React.ReactNode;
+  /**
+   * Optional inset between the window and the composition edges. Defaults
+   * to the Screen-Studio-style padding from LAYOUT. Set all to 0 to make
+   * the window fill the composition (used by the trimmed clean scene).
+   */
+  paddingX?: number;
+  paddingTop?: number;
+  paddingBottom?: number;
 };
 
 /**
@@ -30,14 +38,17 @@ export const BrowserWindow: React.FC<BrowserWindowProps> = ({
   focusY = 0.5,
   url,
   children,
+  paddingX = LAYOUT.windowPaddingX,
+  paddingTop = LAYOUT.windowPaddingTop,
+  paddingBottom = LAYOUT.windowPaddingBottom,
 }) => {
   return (
     <AbsoluteFill
       style={{
-        paddingLeft: LAYOUT.windowPaddingX,
-        paddingRight: LAYOUT.windowPaddingX,
-        paddingTop: LAYOUT.windowPaddingTop,
-        paddingBottom: LAYOUT.windowPaddingBottom,
+        paddingLeft: paddingX,
+        paddingRight: paddingX,
+        paddingTop,
+        paddingBottom,
       }}
     >
       <div

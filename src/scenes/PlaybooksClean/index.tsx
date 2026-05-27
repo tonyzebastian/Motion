@@ -8,6 +8,12 @@ import { MouseCursor } from '../Playbooks/components/MouseCursor';
 import { SplitView } from '../Playbooks/components/SplitView';
 import { LAYOUT, MOUSE_START, MOUSE_TARGET, TIMING, ZOOM } from '../Playbooks/constants';
 
+// Phase 4 zoom is anchored near the top-left of the body (top edge pinned,
+// horizontal anchor pulled left) so the playbook reel and the chat content
+// on the left side stay prominently visible as the camera pushes in.
+const PHASE4_FOCUS_X = 0.25;
+const PHASE4_FOCUS_Y = 0;
+
 // ============================================
 // PlaybooksClean Scene
 // ============================================
@@ -16,23 +22,33 @@ import { LAYOUT, MOUSE_START, MOUSE_TARGET, TIMING, ZOOM } from '../Playbooks/co
 // - The Screen-Studio-style padding (windowPaddingX / windowPaddingTop /
 //   windowPaddingBottom) is set to 0, so the BrowserWindow fills the entire
 //   composition.
-// - The composition itself is sized 1120x720 (= LAYOUT.sceneWidth/Height
-//   minus the padding) so there's no surrounding margin to render or export.
+// - The Safari-style browser header is hidden, so the composition is just
+//   the body content area.
+// - The composition is sized 1120x668 (= LAYOUT.sceneWidth/Height minus
+//   the padding minus the headerHeight) so there's no surrounding margin
+//   or chrome to render or export.
 //
 // Mouse coordinates and the zoom focus point are shifted by the removed
-// padding so the cursor still lands on the input field and the camera still
-// zooms around the same on-screen point as the original scene.
+// padding AND by the removed header height so the cursor still lands on
+// the input field and the camera still zooms around the same on-screen
+// point as the original scene.
 
 const CLEAN_SCENE_WIDTH = LAYOUT.sceneWidth - LAYOUT.windowPaddingX * 2; // 1120
 const CLEAN_SCENE_HEIGHT =
-  LAYOUT.sceneHeight - LAYOUT.windowPaddingTop - LAYOUT.windowPaddingBottom; // 720
+  LAYOUT.sceneHeight -
+  LAYOUT.windowPaddingTop -
+  LAYOUT.windowPaddingBottom -
+  LAYOUT.headerHeight; // 668
 
-// In the clean scene the BrowserWindow has no padding, so window-local
-// coordinates equal scene coordinates. Shift the original mouse targets
-// (which were in 1280x900 scene-space) into the new 1120x720 scene-space.
+// In the clean scene the BrowserWindow has no padding and no header, so
+// window-local body-coordinates equal scene coordinates. Shift the original
+// mouse targets (which were in 1280x900 scene-space, with the body offset
+// by windowPaddingTop + headerHeight from the top of the scene) into the
+// new 1120x668 body-only scene-space.
+const VERTICAL_TRIM = LAYOUT.windowPaddingTop + LAYOUT.headerHeight;
 const CLEAN_MOUSE_TARGET = {
   x: MOUSE_TARGET.x - LAYOUT.windowPaddingX,
-  y: MOUSE_TARGET.y - LAYOUT.windowPaddingTop,
+  y: MOUSE_TARGET.y - VERTICAL_TRIM,
 };
 const CLEAN_MOUSE_START = {
   x: Math.min(
@@ -40,36 +56,20 @@ const CLEAN_MOUSE_START = {
     CLEAN_SCENE_WIDTH,
   ),
   y: Math.min(
-    Math.max(MOUSE_START.y - LAYOUT.windowPaddingTop, 0),
+    Math.max(MOUSE_START.y - VERTICAL_TRIM, 0),
     CLEAN_SCENE_HEIGHT,
   ),
 };
-
-// Zoom focus point as a fraction of the window's own size. With zero
-// padding the window equals the scene, so this is just the click point
-// divided by the scene dimensions. We don't apply the original
-// minEdgeMargin clamp because there's no visible background to keep
-// peeking out from behind the zoomed window.
-const FOCUS_X = CLEAN_MOUSE_TARGET.x / CLEAN_SCENE_WIDTH;
-const FOCUS_Y = CLEAN_MOUSE_TARGET.y / CLEAN_SCENE_HEIGHT;
 
 export const PlaybooksCleanScene: React.FC = () => {
   const frame = useCurrentFrame();
 
   const easing = Easing.out(Easing.cubic);
 
-  const phase1ZoomIn = interpolate(
-    frame,
-    [TIMING.zoomInStart, TIMING.zoomInEnd],
-    [1, ZOOM.level],
-    { easing, extrapolateLeft: 'clamp', extrapolateRight: 'clamp' },
-  );
-  const phase1ZoomOut = interpolate(
-    frame,
-    [TIMING.zoomOutStart, TIMING.zoomOutEnd],
-    [ZOOM.level, 1],
-    { easing, extrapolateLeft: 'clamp', extrapolateRight: 'clamp' },
-  );
+  // Phase 1 zoom (around the input click point) is intentionally
+  // disabled in the clean scene -- we stay at 1x while the user types
+  // the initial prompt. Only the Phase 4 "searching for playbook" zoom
+  // is kept, anchored to the top-left so the reel stays fully visible.
   const phase4ZoomIn = interpolate(
     frame,
     [TIMING.searchZoomInStart, TIMING.searchZoomInEnd],
@@ -84,10 +84,8 @@ export const PlaybooksCleanScene: React.FC = () => {
   );
 
   let zoom: number;
-  if (frame < TIMING.zoomOutStart) {
-    zoom = phase1ZoomIn;
-  } else if (frame < TIMING.searchZoomInStart) {
-    zoom = phase1ZoomOut;
+  if (frame < TIMING.searchZoomInStart) {
+    zoom = 1;
   } else if (frame < TIMING.searchZoomOutStart) {
     zoom = phase4ZoomIn;
   } else {
@@ -115,11 +113,12 @@ export const PlaybooksCleanScene: React.FC = () => {
       <BrowserWindow
         url="app.sundial.ai"
         zoom={zoom}
-        focusX={FOCUS_X}
-        focusY={FOCUS_Y}
+        focusX={PHASE4_FOCUS_X}
+        focusY={PHASE4_FOCUS_Y}
         paddingX={0}
         paddingTop={0}
         paddingBottom={0}
+        showHeader={false}
       >
         <ChatColumnWidthContext.Provider value={chatColumnWidth}>
           {phase7Mounted ? (

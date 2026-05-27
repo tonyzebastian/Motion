@@ -22,6 +22,12 @@ type BrowserWindowProps = {
   paddingX?: number;
   paddingTop?: number;
   paddingBottom?: number;
+  /**
+   * Whether to render the Safari-style header (nav controls + address
+   * bar) on top of the body. Defaults to true. Set to false for trimmed
+   * scenes that just want the body content with no chrome.
+   */
+  showHeader?: boolean;
 };
 
 /**
@@ -41,6 +47,7 @@ export const BrowserWindow: React.FC<BrowserWindowProps> = ({
   paddingX = LAYOUT.windowPaddingX,
   paddingTop = LAYOUT.windowPaddingTop,
   paddingBottom = LAYOUT.windowPaddingBottom,
+  showHeader = true,
 }) => {
   return (
     <AbsoluteFill
@@ -75,7 +82,7 @@ export const BrowserWindow: React.FC<BrowserWindowProps> = ({
             overflow: 'hidden',
           }}
         >
-          <BrowserHeader url={url} />
+          {showHeader ? <BrowserHeader url={url} /> : null}
           <div
             style={{
               flex: 1,

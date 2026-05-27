@@ -104,7 +104,7 @@ export const RemotionRoot: React.FC = () => {
           durationInFrames={1310}
           fps={30}
           width={1120}
-          height={720}
+          height={668}
         />
         <Composition
           id="PlaybooksAngle2"

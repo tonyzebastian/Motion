@@ -25,6 +25,16 @@ const SPEED_KEYFRAMES: ReadonlyArray<{ frame: number; speed: number }> = [
   { frame: 600, speed: 0.25 },  // gentle pickup in the long tail
 ];
 
+// Global multiplier applied to the integrated drift time. The shader is driven
+// deterministically via its `frame` prop (with `speed={0}` so it never runs its
+// own wall-clock RAF loop), which means the keyframe speeds above are the ONLY
+// thing animating the gradient during a render. The raw values read as
+// "0.08x–0.5x of real-time drift", which crawls on render. Scaling them up here
+// restores a visible, lively pace while preserving the relative energy contour
+// between keyframes. Tune this single number to make the whole background
+// faster (higher) or slower (lower).
+const TIME_SCALE = 4;
+
 // Pre-compute cumulative integral (in "frame × speed" units) at each keyframe
 // boundary using the trapezoid rule. O(K) once, then O(K) per frame to look up.
 const CUMULATIVE_AT_KEYFRAME: number[] = (() => {
@@ -73,8 +83,11 @@ export const MeshBackground: React.FC = () => {
   const { fps } = useVideoConfig();
 
   // `timeMs` already encodes the variable rate, so the shader's own `speed`
-  // is set to 1 — the curve above is the single source of truth.
-  const timeMs = warpedTimeMs(frame, fps);
+  // is set to 0 — the curve above is the single source of truth and the shader
+  // never advances on its own wall-clock RAF loop (which would (a) crawl on
+  // render where wall-clock time is frozen and (b) snap the phase backward on
+  // every React commit, e.g. when a new section mounts — the "jerk").
+  const timeMs = warpedTimeMs(frame, fps) * TIME_SCALE;
 
   return (
     <AbsoluteFill>
@@ -91,7 +104,7 @@ export const MeshBackground: React.FC = () => {
         ]}
         distortion={0.95}
         swirl={0.05}
-        speed={1}
+        speed={0}
         frame={timeMs}
         grainMixer={0.35}
         grainOverlay={0.3}

@@ -7,8 +7,6 @@ import {
   useCurrentFrame,
 } from 'remotion';
 import { BrandStack } from './BrandStack';
-import { Closing } from './Closing';
-import { CLOSING_CROSSFADE, CLOSING_DURATION } from './Closing/timing';
 import { Everywhere } from './Everywhere';
 import { CROSSFADE_FRAMES, EVERYWHERE_DURATION } from './Everywhere/timing';
 import { ExtendedCapabilities } from './ExtendedCapabilities';
@@ -59,15 +57,9 @@ const PLAYBOOK_START = EVERYWHERE_START + EVERYWHERE_DURATION;
 const EXTENDED_START =
   PLAYBOOK_START + PLAYBOOK_DURATION - EXTENDED_CROSSFADE;
 
-// Closing (section 6) starts CLOSING_CROSSFADE frames before the Extended
-// Capabilities section ends, so its own SECTION_FADE_IN overlaps the Extended
-// tail for a clean cross-dissolve into the two-beat outro.
-const CLOSING_START =
-  EXTENDED_START + EXTENDED_DURATION - CLOSING_CROSSFADE;
-
 // Total reel length. Exported so Root's <Composition durationInFrames> stays
 // in sync with the section timeline automatically.
-export const SUNDIAL_REEL_2026_DURATION = CLOSING_START + CLOSING_DURATION;
+export const SUNDIAL_REEL_2026_DURATION = EXTENDED_START + EXTENDED_DURATION;
 
 // Wraps BrandStack with a tail fade so it cross-dissolves into the
 // Everywhere section. Local frame is relative to its own Sequence.
@@ -206,14 +198,6 @@ export const SundialReel2026Scene: React.FC = () => {
         layout="none"
       >
         <ExtendedCapabilities />
-      </Sequence>
-      <Sequence
-        name="6 · Closing"
-        from={CLOSING_START}
-        durationInFrames={CLOSING_DURATION}
-        layout="none"
-      >
-        <Closing />
       </Sequence>
     </AbsoluteFill>
   );

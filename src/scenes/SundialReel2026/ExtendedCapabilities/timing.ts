@@ -38,9 +38,22 @@ export const FEATURE_COUNT = 7;
 export const CARD_COUNT = FEATURE_COUNT + 1;
 
 // Frame at which the last card (And much more) has finished entering.
-const LAST_CARD_END =
+export const LAST_CARD_END =
   CARD_START + (CARD_COUNT - 1) * CARD_STAGGER + CARD_DURATION;
 
-// Total section duration. Holds on the full grid for ~2s after the last card
+// --- Outro (final beat) ---
+// After the grid lands and holds, the section resolves into a closing lockup:
+//   1. the feature cards fade away
+//   2. the center "Also ships with" subtext crossfades into the statement
+//      "The smartest member of your team isn't a hire."
+//   3. the "Ask us for a demo" CTA rises in beneath it
+// This makes ExtendedCapabilities the final beat of the reel.
+export const OUTRO_START = LAST_CARD_END + 30;
+export const CARDS_FADE_DURATION = 30;
+export const STATEMENT_DURATION = 26;
+export const CTA_START = OUTRO_START + 26;
+export const CTA_DURATION = 28;
+
+// Total section duration. Holds on the closing lockup for ~2.5s after the CTA
 // lands so the beat breathes before the reel ends.
-export const EXTENDED_DURATION = LAST_CARD_END + 120;
+export const EXTENDED_DURATION = CTA_START + CTA_DURATION + 150;

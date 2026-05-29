@@ -26,13 +26,15 @@ const FUNNEL_STACK = `"${funnelSans}", -apple-system, BlinkMacSystemFont, "Helve
 // in from above" feel. There is no header, no fill, no shadow — only the
 // chatbox reads as a "real" filled UI element.
 const PHONE_WIDTH = 960;
-// Phone bottom sits ~70px below the chatbox — close enough to feel like a
-// tight mobile-app frame around the composer rather than a tall device
-// with empty space at the bottom. Top is still off-canvas (top = -40);
-// phone bottom now lands at canvas y = 660.
-const PHONE_HEIGHT = 700;
+// Phone bottom sits 40px below the chatbox's bottom edge — equal to the 40px
+// GUTTER on the left/right (PHONE_WIDTH 960 - chatbox 880 = 80, split 40 per
+// side), so the composer has uniform padding on left, right, and bottom.
+// Chatbox is 100 tall, centered at canvas y=540 → bottom edge at y=590; with
+// top off-canvas at -40, height 670 lands the phone bottom at canvas y=630.
+const PHONE_HEIGHT = 670;
 const PHONE_TOP = -40;
 const PHONE_LEFT = (1920 - PHONE_WIDTH) / 2;
+// Matches the Claude shell's frame radius so both surfaces read the same.
 const PHONE_RADIUS = 40;
 
 // Inside gutter for thread content. Sized so message rows align flush with

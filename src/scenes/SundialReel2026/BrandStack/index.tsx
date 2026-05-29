@@ -46,15 +46,15 @@ const TAGLINE_WORDS = ['Opinionated', 'Intelligence', 'for', 'data', 'teams.'];
 // Trusted-by group — Figma nodes 260:1662 / 260:1714 / 260:1660.
 const TRUSTED_BY_GAP = 24; // between label-row and logo-row
 const LABEL_GROUP_GAP = 8; // between hairlines and "Trusted by" label
-const HAIRLINE_WIDTH = 100;
+const HAIRLINE_WIDTH = 120;
 const HAIRLINE_HEIGHT = 1;
-const TRUSTED_BY_LABEL_SIZE = 20;
+const TRUSTED_BY_LABEL_SIZE = 26;
 const PIPE_WIDTH = 1;
-const PIPE_HEIGHT = 21;
-const LOGO_ROW_GAP = 32;
+const PIPE_HEIGHT = 28;
+const LOGO_ROW_GAP = 40;
 
 // Customer logos pulled from the Sundial.ai homepage hero.
-const CUSTOMER_LOGO_HEIGHT = 28;
+const CUSTOMER_LOGO_HEIGHT = 40;
 const CUSTOMER_LOGO_OPACITY = 0.82;
 
 type CustomerLogo = {

@@ -33,7 +33,26 @@ const easeOut = Easing.out(Easing.cubic);
 // camera zoom-in. After a hold the cursor exits, the popover fades,
 // and the camera zooms back to its resting state.
 //
-export const PlaybooksTrustSignalScene: React.FC = () => {
+type PlaybooksTrustSignalSceneProps = {
+  /**
+   * When false, the decorative scene wallpaper is omitted so the floating
+   * browser window can sit on top of whatever the parent composition
+   * provides (e.g. the reel's mesh gradient). Defaults to true to keep
+   * the standalone composition unchanged.
+   */
+  showBackground?: boolean;
+  /**
+   * Global opacity for the artifact report's inline citation markers
+   * ([1]..[8]). Defaults to 0 so the standalone composition is unchanged;
+   * the reel passes 1 so the markers are already present here and don't
+   * pop in when the following Citations sub-sequence takes over.
+   */
+  citationsOpacity?: number;
+};
+
+export const PlaybooksTrustSignalScene: React.FC<
+  PlaybooksTrustSignalSceneProps
+> = ({ showBackground = true, citationsOpacity = 0 }) => {
   const frame = useCurrentFrame();
 
   // ---- Split slide-in ----
@@ -120,7 +139,7 @@ export const PlaybooksTrustSignalScene: React.FC = () => {
 
   return (
     <AbsoluteFill>
-      <Background />
+      {showBackground && <Background />}
       <BrowserWindow
         url="app.sundial.ai"
         zoom={zoom}
@@ -131,7 +150,7 @@ export const PlaybooksTrustSignalScene: React.FC = () => {
           <SplitView
             splitProgress={splitProgress}
             left={<TrustSignalChatColumn />}
-            right={<ArtifactViewer />}
+            right={<ArtifactViewer citationsOpacity={citationsOpacity} />}
           />
         </ChatColumnWidthContext.Provider>
       </BrowserWindow>

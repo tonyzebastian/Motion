@@ -2,12 +2,10 @@ import React from 'react';
 import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from 'remotion';
 import {
   Chatbox,
-  SLACK_CHATBOX_WIDTH,
   SURFACE_VISUALS,
   type SurfaceVisual,
 } from './Chatbox';
 import { Caption } from './Caption';
-import { Cursor } from './Cursor';
 import { NativePrompt } from './NativePrompt';
 import { SlackShell } from './SlackShell';
 import { DesktopShell } from './DesktopShell';
@@ -19,16 +17,8 @@ import {
   BEAT_C_START,
   BEAT_D_END,
   BEAT_D_START,
-  BC_CURSOR_CLICK_FRAME,
-  BC_CURSOR_ENTER_END,
-  BC_CURSOR_ENTER_START,
-  BC_CURSOR_HIDE_FRAME,
   B_CHROME_IN_END,
   B_CHROME_IN_START,
-  B_CURSOR_CLICK_FRAME,
-  B_CURSOR_ENTER_END,
-  B_CURSOR_ENTER_START,
-  B_CURSOR_HIDE_FRAME,
   CHATBOX_CROSSFADE,
   MCP_IN_END,
   MCP_IN_START,
@@ -40,6 +30,8 @@ import {
   MENTION_TYPE_OUT_START,
   QUERY_TEXT,
   SECTION_FADE_IN,
+  SLACK_MORPH_END,
+  SLACK_MORPH_START,
   TYPEWRITER_END,
   TYPEWRITER_START,
   chromeOpacity,
@@ -50,7 +42,6 @@ import {
 // border) are interpolated across each beat seam — so what the viewer sees
 // is one chatbox visibly restyling itself, not two chatboxes ghosting
 // through each other.
-const CHATBOX_CENTER_X = 960;
 const CHATBOX_CENTER_Y = 540;
 
 // Chatbox visual box ≈ 92px (padding 24 + 44px row + padding 24); add the
@@ -77,23 +68,47 @@ const lerpVisual = (a: SurfaceVisual, b: SurfaceVisual, t: number): SurfaceVisua
   borderOpacity: lerp(a.borderOpacity, b.borderOpacity, t),
 });
 
-// Per-seam descriptor: which visual we're morphing FROM and TO, and the
-// frame at which the morph completes (= start of the next beat). Each seam
-// owns a CHATBOX_CROSSFADE-wide window ending at `at`.
+// Per-seam descriptor: which visual we're morphing FROM and TO over an
+// explicit [start, end] window. The B/C and C/D seams still own the standard
+// CHATBOX_CROSSFADE-wide window that ends at the beat boundary. The A→B
+// (native → slack) morph is special: it is decoupled from BEAT_A_END and
+// instead runs over the SLACK_MORPH window so the input field re-skins in
+// step with the Slack chrome (right as @sundial finishes typing) rather than
+// before the cursor even arrives.
 type Seam = {
-  at: number;
+  start: number;
+  end: number;
   from: SurfaceVisual;
   to: SurfaceVisual;
 };
 
 const seams: Seam[] = [
-  { at: BEAT_A_END, from: SURFACE_VISUALS.native, to: SURFACE_VISUALS.slack },
-  { at: BEAT_B_END, from: SURFACE_VISUALS.slack, to: SURFACE_VISUALS.claude },
-  { at: BEAT_C_END, from: SURFACE_VISUALS.claude, to: SURFACE_VISUALS.native },
+  {
+    start: SLACK_MORPH_START,
+    end: SLACK_MORPH_END,
+    from: SURFACE_VISUALS.native,
+    to: SURFACE_VISUALS.slack,
+  },
+  {
+    start: BEAT_B_END - CHATBOX_CROSSFADE,
+    end: BEAT_B_END,
+    from: SURFACE_VISUALS.slack,
+    to: SURFACE_VISUALS.claude,
+  },
+  {
+    start: BEAT_C_END - CHATBOX_CROSSFADE,
+    end: BEAT_C_END,
+    from: SURFACE_VISUALS.claude,
+    to: SURFACE_VISUALS.native,
+  },
 ];
 
+// Baseline (non-morphing) visual for a frame. The box stays NATIVE through
+// all of Beat A AND the early part of Beat B (cursor fly-in + @sundial
+// type-in) — it only becomes the Slack pill once the SLACK_MORPH window
+// completes.
 const getBaseVisual = (frame: number): SurfaceVisual => {
-  if (frame < BEAT_A_END) return SURFACE_VISUALS.native;
+  if (frame < SLACK_MORPH_END) return SURFACE_VISUALS.native;
   if (frame < BEAT_B_END) return SURFACE_VISUALS.slack;
   if (frame < BEAT_C_END) return SURFACE_VISUALS.claude;
   return SURFACE_VISUALS.native;
@@ -103,16 +118,13 @@ const getBaseVisual = (frame: number): SurfaceVisual => {
 // Claude no longer grows when the MCP tag appears (the tag is now inline on
 // the writing row), so there is no height interpolation tied to mcpOpacity.
 const getSurfaceVisual = (frame: number): SurfaceVisual => {
-  const seam = seams.find(
-    (s) => frame >= s.at - CHATBOX_CROSSFADE && frame < s.at,
-  );
+  const seam = seams.find((s) => frame >= s.start && frame < s.end);
   if (seam) {
-    const t = interpolate(
-      frame,
-      [seam.at - CHATBOX_CROSSFADE, seam.at],
-      [0, 1],
-      { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: seamEase },
-    );
+    const t = interpolate(frame, [seam.start, seam.end], [0, 1], {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+      easing: seamEase,
+    });
     return lerpVisual(seam.from, seam.to, t);
   }
   return getBaseVisual(frame);
@@ -153,26 +165,6 @@ const BeatChrome: React.FC<{
     </AbsoluteFill>
   );
 };
-
-// ---------------------------------------------------------------------------
-// Cursor targets — the cursor's tip lands at the composer's writing-area
-// origin (chatbox left edge + Slack paddingX). Slack and Claude share the
-// same chatbox width (880) and similar paddings, so both cursor passes use
-// the same target. The SVG's hotspot is at (2, 2) inside its 22×28 viewBox,
-// so we offset the translate by (-2, -2) so the tip — not the corner — lands
-// on the target pixel.
-// ---------------------------------------------------------------------------
-
-const CURSOR_TIP_OFFSET = { x: -2, y: -2 };
-const COMPOSER_LEFT_X =
-  CHATBOX_CENTER_X - SLACK_CHATBOX_WIDTH / 2 + SURFACE_VISUALS.slack.paddingX;
-const CURSOR_TARGET = {
-  x: COMPOSER_LEFT_X + CURSOR_TIP_OFFSET.x,
-  y: CHATBOX_CENTER_Y + CURSOR_TIP_OFFSET.y,
-};
-// Starts above the top-right corner of the canvas so the cursor sweeps
-// diagonally toward the composer.
-const CURSOR_START = { x: 1500, y: -60 };
 
 // ---------------------------------------------------------------------------
 // Everywhere — derives all per-frame state once, then renders four chrome
@@ -298,26 +290,6 @@ export const Everywhere: React.FC = () => {
           />
         </div>
       </AbsoluteFill>
-
-      {/* Cursor passes — rendered above the chatbox so the tip visibly
-          lands inside the composer. Both passes target the same writing-
-          area origin (chatbox left edge + Slack paddingX). */}
-      <Cursor
-        start={CURSOR_START}
-        target={CURSOR_TARGET}
-        enterStart={B_CURSOR_ENTER_START}
-        enterEnd={B_CURSOR_ENTER_END}
-        clickFrame={B_CURSOR_CLICK_FRAME}
-        hideFrame={B_CURSOR_HIDE_FRAME}
-      />
-      <Cursor
-        start={CURSOR_START}
-        target={CURSOR_TARGET}
-        enterStart={BC_CURSOR_ENTER_START}
-        enterEnd={BC_CURSOR_ENTER_END}
-        clickFrame={BC_CURSOR_CLICK_FRAME}
-        hideFrame={BC_CURSOR_HIDE_FRAME}
-      />
 
       {/* Caption is persistent across all four beats. */}
       <Caption />

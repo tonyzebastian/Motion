@@ -126,7 +126,7 @@ export const SURFACE_VISUALS: Record<ChatboxSurface, SurfaceVisual> = {
   slack: {
     width: SLACK_CHATBOX_WIDTH,
     height: 100,
-    borderRadius: 999,
+    borderRadius: 22,
     paddingTop: 0,
     paddingBottom: 0,
     paddingX: 32,

@@ -7,17 +7,22 @@ import { Easing, interpolate } from 'remotion';
 // Beat boundaries
 // ---------------------------------------------------------------------------
 
-// Beat B grew by ~60 frames so the new choreography fits: cursor in → click
-// → @sundial typewriter → Slack chrome → hold → cursor returns → delete.
-// Beat C still 220f, Beat D still 120f. Total section ≈ 14s @ 60fps.
+// Beat B is now cursor-free, so it's tight: the @sundial typewriter fires
+// right after the intro typing finishes, the Slack UI + field morph land as
+// it completes, a short hold, then @sundial deletes and we morph straight
+// into the Claude beat for the Sundial MCP tag. Beat C still 220f, Beat D
+// still 120f. Total section ≈ 12s @ 60fps.
 export const BEAT_A_START = 0;
-export const BEAT_A_END = 240;
-export const BEAT_B_START = 240;
-export const BEAT_B_END = 500;
-export const BEAT_C_START = 500;
-export const BEAT_C_END = 720;
-export const BEAT_D_START = 720;
-export const BEAT_D_END = 840;
+export const BEAT_A_END = 230;
+export const BEAT_B_START = 230;
+export const BEAT_B_END = 390;
+export const BEAT_C_START = 390;
+export const BEAT_C_END = 610;
+export const BEAT_D_START = 610;
+// Beat D is held longer than the others so the caption can finish building
+// ("...anywhere") and the serif payoff line ("Sundial answers and
+// remembers.") can rise in and breathe before the section ends.
+export const BEAT_D_END = 810;
 
 export const EVERYWHERE_DURATION = BEAT_D_END;
 
@@ -158,49 +163,38 @@ export const TYPEWRITER_START = 70;
 export const TYPEWRITER_END = 200;
 
 // ---------------------------------------------------------------------------
-// Beat B choreography
+// Beat B choreography (cursor-free)
 //
-// Two cursor passes anchor the beat:
-//   1. Cursor flies in, clicks at composer left, fades out → "@sundial "
-//      types in → Slack chrome fades in.
-//   2. Cursor returns late in the beat, clicks, fades out → "@sundial "
-//      deletes in reverse → Slack chrome fades out alongside the seam morph
-//      into Beat C.
+//   1. Intro typing finishes (TYPEWRITER_END) → "@sundial " types in.
+//   2. As it completes, the Slack chrome + the chatbox field morph
+//      (native → Slack pill) land together.
+//   3. Short hold, then "@sundial " deletes in reverse and we morph straight
+//      into the Claude beat (where the Sundial MCP tag types in).
 // ---------------------------------------------------------------------------
 
-// First cursor pass (type-in).
-export const B_CURSOR_ENTER_START = BEAT_B_START + 20; // 260
-export const B_CURSOR_ENTER_END = BEAT_B_START + 40; // 280
-export const B_CURSOR_CLICK_FRAME = BEAT_B_START + 42; // 282
-export const B_CURSOR_HIDE_FRAME = BEAT_B_START + 54; // 294
+// @sundial typewriter — fires shortly after the intro typing completes (the
+// native prompt has just faded out). Runs over 44f for 9 chars (≈5f/char) so
+// each character lands distinctly rather than blurring into a single fade.
+export const MENTION_TYPE_IN_START = TYPEWRITER_END + 16; // 216
+export const MENTION_TYPE_IN_END = MENTION_TYPE_IN_START + 44; // 260
 
-// 30-frame pause between the cursor finishing its click and the @sundial
-// typewriter starting. Without this pause the click and the first typed
-// character fired on top of each other and read as a single beat; the
-// pause lets the viewer register the click before the prefix appears.
-//
-// @sundial typewriter then runs over 44f for 9 chars (≈5f/char) — slower
-// than the original 4f/char so each character lands distinctly rather
-// than blurring into a single fade.
-export const MENTION_TYPE_IN_START = BEAT_B_START + 84; // 324
-export const MENTION_TYPE_IN_END = BEAT_B_START + 128; // 368
+// Slack chrome fades in just as the @sundial typewriter completes — the
+// brief is "that's when we show the slack UI". 30f fade for a soft reveal.
+export const B_CHROME_IN_START = MENTION_TYPE_IN_END; // 260
+export const B_CHROME_IN_END = B_CHROME_IN_START + 30; // 290
 
-// Slack chrome fades in just after the @sundial typewriter completes —
-// the brief is "that's when we show the slack UI". 30f fade for a soft
-// reveal.
-export const B_CHROME_IN_START = BEAT_B_START + 132; // 372
-export const B_CHROME_IN_END = BEAT_B_START + 162; // 402
+// Chatbox input-field re-skin (native composer → Slack pill). Runs IN STEP
+// with the Slack chrome fade-in above — i.e. right as the @sundial mention
+// finishes typing — so the box visibly transforms together with the Slack
+// background appearing.
+export const SLACK_MORPH_START = B_CHROME_IN_START; // 260
+export const SLACK_MORPH_END = B_CHROME_IN_END; // 290
 
-// Second cursor pass (type-out / delete).
-export const BC_CURSOR_ENTER_START = BEAT_B_START + 200; // 440
-export const BC_CURSOR_ENTER_END = BEAT_B_START + 220; // 460
-export const BC_CURSOR_CLICK_FRAME = BEAT_B_START + 222; // 462
-export const BC_CURSOR_HIDE_FRAME = BEAT_B_START + 234; // 474
-
-// @sundial typewriter out. Same 30f window, deleting backwards. Ends just
-// before the seam crossfade fires (BEAT_B_END - CHATBOX_CROSSFADE = 482).
-export const MENTION_TYPE_OUT_START = BEAT_B_START + 230; // 470
-export const MENTION_TYPE_OUT_END = BEAT_B_START + 260; // 500
+// @sundial typewriter out. After a short hold on the Slack UI, the prefix
+// deletes backwards over 30f, ending just before the slack chrome fades out
+// and the Slack → Claude seam morph fires.
+export const MENTION_TYPE_OUT_START = BEAT_B_START + 105; // 335
+export const MENTION_TYPE_OUT_END = MENTION_TYPE_OUT_START + 30; // 365
 
 // ---------------------------------------------------------------------------
 // Beat C choreography — Sundial MCP tag types in at the START of the

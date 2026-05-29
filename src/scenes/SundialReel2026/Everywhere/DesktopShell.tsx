@@ -11,8 +11,9 @@ import { ChatGPTLogo, ClaudeLogo } from './AppLogos';
 
 const PHONE_WIDTH = 960;
 // Matches SlackShell's frame exactly so the Slack → Claude seam is a pure
-// re-skin (only the content inside the outline changes).
-const PHONE_HEIGHT = 700;
+// re-skin (only the content inside the outline changes). Height 670 gives the
+// composer equal 40px padding on left, right, and bottom.
+const PHONE_HEIGHT = 670;
 const PHONE_TOP = -40;
 const PHONE_LEFT = (1920 - PHONE_WIDTH) / 2;
 const PHONE_RADIUS = 40;

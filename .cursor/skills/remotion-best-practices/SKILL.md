@@ -93,6 +93,8 @@ To delay content wrap it in `<Sequence>` and use `from`.
 To limit the duration of an element, use `durationInFrames` of `<Sequence>`.
 `<Sequence>` by default is an absolute fill. For inline content, use `layout="none"`.
 
+ALWAYS pass a `name` prop. The name is what shows up in the Remotion Studio timeline panel, so good names turn the timeline into a real outline. Number top-level sequences (`"1 · Intro"`, `"2 · Main"`, `"3 · Outro"`) using the middle-dot separator (`·`), and use letter suffixes for nested sequences (`"3a · Sub-beat"`). See [rules/sequencing.md](rules/sequencing.md#naming-sequences) for the full convention.
+
 ```tsx
 import { Sequence } from "remotion";
 
@@ -118,13 +120,13 @@ const Main = () => {
 
   return (
     <AbsoluteFill>
-      <Sequence>
+      <Sequence name="1 · Background">
         <Background />
       </Sequence>
-      <Sequence from={1 * fps} durationInFrames={2 * fps} layout="none">
+      <Sequence name="2 · Title" from={1 * fps} durationInFrames={2 * fps} layout="none">
         <Title />
       </Sequence>
-      <Sequence from={2 * fps} durationInFrames={2 * fps} layout="none">
+      <Sequence name="3 · Subtitle" from={2 * fps} durationInFrames={2 * fps} layout="none">
         <Subtitle />
       </Sequence>
     </AbsoluteFill>

@@ -48,7 +48,23 @@ const SCROLL_STYLES = `
 }
 `;
 
-export const ArtifactViewer: React.FC = () => {
+type ArtifactViewerProps = {
+  /** Global gate / opacity for the inline citation markers (default 0). */
+  citationsOpacity?: number;
+  /** Per-index opacity override (for staggered fade-in). */
+  citationOpacities?: Record<number, number>;
+  /** Index whose citation popover is currently shown. */
+  hoveredCitationIndex?: number;
+  /** Popover element rendered next to the hovered marker. */
+  popoverNode?: React.ReactNode;
+};
+
+export const ArtifactViewer: React.FC<ArtifactViewerProps> = ({
+  citationsOpacity,
+  citationOpacities,
+  hoveredCitationIndex,
+  popoverNode,
+}) => {
   return (
     <div
       style={{
@@ -80,7 +96,12 @@ export const ArtifactViewer: React.FC = () => {
           overflowY: 'auto',
         }}
       >
-        <ArtifactReport />
+        <ArtifactReport
+          citationsOpacity={citationsOpacity}
+          citationOpacities={citationOpacities}
+          hoveredCitationIndex={hoveredCitationIndex}
+          popoverNode={popoverNode}
+        />
       </div>
     </div>
   );

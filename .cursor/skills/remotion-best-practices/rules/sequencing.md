@@ -55,6 +55,39 @@ If the items should not be wrapped, use the `layout` prop:
 </Sequence>
 ```
 
+## Naming sequences
+
+ALWAYS pass a `name` prop to every `<Sequence>`. The name is what shows up in the Remotion Studio timeline panel, so good names turn the timeline into a real outline you can scrub against. It's metadata only — it does not affect the rendered output.
+
+Conventions to follow:
+
+- Number every top-level sequence so reading order is unambiguous: `"1 · Intro"`, `"2 · BrandStack"`, `"3 · Outro"`. Use the middle-dot separator (`·`, U+00B7) so the number reads as a label, not a frame count.
+- For nested sequences inside a numbered parent, use letter suffixes: `"3a · Slack beat"`, `"3b · Web beat"`. This keeps the parent/child relationship obvious in the timeline tree.
+- Prefer descriptive, content-first names (`"4 · Playbook"`) over implementation names (`"PlaybookWithExit wrapper"`).
+- If a sequence wraps content with an extra exit motion, keep the name about the content, not the wrapper. e.g. name it `"3 · Everywhere"`, not `"EverywhereWithExit"`.
+
+```tsx
+<AbsoluteFill>
+  <Sequence name="1 · Headline" durationInFrames={HEADLINE_END} layout="none">
+    <Headline />
+  </Sequence>
+  <Sequence name="2 · BrandStack" from={BRAND_START} durationInFrames={BRAND_DURATION} layout="none">
+    <BrandStack />
+  </Sequence>
+  <Sequence name="3 · Everywhere" from={EVERYWHERE_START} durationInFrames={EVERYWHERE_DURATION} layout="none">
+    <Everywhere />
+  </Sequence>
+  <Sequence name="4 · Playbook" from={PLAYBOOK_START} durationInFrames={PLAYBOOK_DURATION} layout="none">
+    <Sequence name="4a · Part A (re-timed)" durationInFrames={PART_A_DURATION} layout="none">
+      <PartA />
+    </Sequence>
+    <Sequence name="4b · Part B (native)" from={PART_B_START} durationInFrames={PART_B_DURATION} layout="none">
+      <PartB />
+    </Sequence>
+  </Sequence>
+</AbsoluteFill>
+```
+
 ## Premounting
 
 This loads the component in the timeline before it is actually played.  

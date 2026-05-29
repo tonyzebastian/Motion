@@ -13,7 +13,11 @@ import { PlaybooksCleanScene } from "./scenes/PlaybooksClean";
 import { PlaybooksAngle2Scene } from "./scenes/PlaybooksAngle2";
 import { PlaybooksAngle2_1Scene } from "./scenes/PlaybooksAngle2_1";
 import { PlaybooksTrustSignalScene } from "./scenes/PlaybooksTrustSignal";
-import { SundialReel2026Scene } from "./scenes/SundialReel2026";
+import { PlaybooksCitationsScene } from "./scenes/PlaybooksCitations";
+import {
+  SundialReel2026Scene,
+  SUNDIAL_REEL_2026_DURATION,
+} from "./scenes/SundialReel2026";
 
 // Each <Composition> is an entry in the sidebar!
 
@@ -103,7 +107,7 @@ export const RemotionRoot: React.FC = () => {
           component={PlaybooksCleanScene}
           durationInFrames={1310}
           fps={30}
-          width={1120}
+          width={1168}
           height={668}
         />
         <Composition
@@ -130,6 +134,14 @@ export const RemotionRoot: React.FC = () => {
           width={1280}
           height={900}
         />
+        <Composition
+          id="PlaybooksCitations"
+          component={PlaybooksCitationsScene}
+          durationInFrames={340}
+          fps={60}
+          width={1280}
+          height={900}
+        />
       </Folder>
 
       {/* Reels */}
@@ -137,7 +149,7 @@ export const RemotionRoot: React.FC = () => {
         <Composition
           id="SundialReel2026"
           component={SundialReel2026Scene}
-          durationInFrames={3600}
+          durationInFrames={SUNDIAL_REEL_2026_DURATION}
           fps={60}
           width={1920}
           height={1080}

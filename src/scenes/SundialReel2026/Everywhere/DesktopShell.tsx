@@ -25,7 +25,10 @@ const PHONE_RADIUS = 40;
 // at canvas y=540.
 const HEADER_TOP_IN_PHONE = 240; // canvas y = PHONE_TOP + 240 = 200
 
-const WIREFRAME_LINE = 'rgba(0, 0, 0, 0.28)';
+// Brand plum outline (matches the caption / caret / MCP tag), a touch
+// stronger than the old light grey so the thicker stroke reads as a
+// deliberate brand frame. Swap to 'rgba(0, 0, 0, 0.45)' for black instead.
+const WIREFRAME_LINE = 'rgba(83, 29, 89, 0.45)';
 const DIVIDER = 'rgba(0, 0, 0, 0.18)';
 
 export const DesktopShell: React.FC = () => {
@@ -42,7 +45,7 @@ export const DesktopShell: React.FC = () => {
           height: PHONE_HEIGHT,
           backgroundColor: 'transparent',
           borderRadius: PHONE_RADIUS,
-          border: `1.5px solid ${WIREFRAME_LINE}`,
+          border: `2.5px solid ${WIREFRAME_LINE}`,
           overflow: 'hidden',
         }}
       >

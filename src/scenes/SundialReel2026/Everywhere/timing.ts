@@ -208,5 +208,38 @@ export const MCP_IN_START = BEAT_C_START + 4; // 504
 export const MCP_IN_END = BEAT_C_START + 40; // 540
 
 // MCP holds, then fades out before the C → D crossfade.
-export const MCP_OUT_END = BEAT_C_END - CHATBOX_CROSSFADE - 4; // 698
-export const MCP_OUT_START = MCP_OUT_END - 36; // 662
+export const MCP_OUT_END = BEAT_C_END - CHATBOX_CROSSFADE - 4; // 588
+export const MCP_OUT_START = MCP_OUT_END - 36; // 552
+
+// ---------------------------------------------------------------------------
+// Camera zoom — pushes in on the chatbox when @sundial starts typing (Beat B)
+// and holds through the Sundial MCP beat (Beat C), then eases back out when
+// the MCP tag is removed. This is a CENTRAL zoom: the focal point and the
+// on-screen anchor are both the canvas center (960, 540), so the UI scales up
+// symmetrically around the middle with no horizontal pan.
+//
+// A central zoom keeps the Slack thread + both AI logos fully on-screen
+// (nothing cropped) and balanced left/right. The bottom caption is
+// intentionally left OUTSIDE the camera group (see index.tsx) so it stays
+// centered/crisp at its own scale.
+// ---------------------------------------------------------------------------
+
+// Zoom in begins exactly when @sundial starts typing, eased over 24f.
+export const ZOOM_IN_START = MENTION_TYPE_IN_START; // 216
+export const ZOOM_IN_END = ZOOM_IN_START + 24; // 240
+
+// Zoom out finishes when the Sundial MCP tag is fully removed, eased over 24f.
+export const ZOOM_OUT_END = MCP_OUT_END; // 588
+export const ZOOM_OUT_START = ZOOM_OUT_END - 24; // 564
+
+// Scale at full zoom.
+export const ZOOM_SCALE = 1.25;
+
+// Focal point (world/canvas coords) mapped to the on-screen anchor at full
+// zoom. Both are the canvas center for a pure central zoom (no pan). The
+// translate is scaled by the zoom scalar so the camera is exact identity at
+// rest.
+export const ZOOM_FOCAL_X = 960;
+export const ZOOM_FOCAL_Y = 540;
+export const ZOOM_ANCHOR_X = 960;
+export const ZOOM_ANCHOR_Y = 540;

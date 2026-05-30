@@ -5,7 +5,7 @@ import {
   loadFont as loadFunnelSans,
 } from '@remotion/google-fonts/FunnelSans';
 import { fontFamily as aleo, loadFont as loadAleo } from '@remotion/google-fonts/Aleo';
-import { B_CHROME_IN_START, BEAT_C_START, BEAT_D_START } from './timing';
+import { B_CHROME_IN_START, BEAT_C_START, ZOOM_OUT_START } from './timing';
 
 loadFunnelSans('normal', {
   weights: ['400', '500'],
@@ -41,13 +41,18 @@ const LINE2_RISE_PX = 28;
 // --- Reveal schedule (section-relative frames) ---
 //   "Ask in Slack" → when the Slack UI appears
 //   ", on web"     → when the Claude (web) UI appears
-//   ", anywhere"   → when we return to the native surface (Beat D)
+//   ", anywhere"   → as the camera zooms back out (Sundial MCP removed)
 //   line 2         → just after line 1 finishes, pushing line 1 up
 const SEG_DURATION = 28;
 const SLACK_REVEAL_START = B_CHROME_IN_START; // 260
 const WEB_REVEAL_START = BEAT_C_START + 4; // 394
-const ANYWHERE_REVEAL_START = BEAT_D_START + 4; // 614
-const LINE2_REVEAL_START = BEAT_D_START + 48; // 658
+// ", anywhere" lands in step with the zoom-out: as the UI pulls back to its
+// resting frame, the caption resolves to its final "anywhere" state.
+const ANYWHERE_REVEAL_START = ZOOM_OUT_START; // 564
+// Line 2 rises in shortly after "anywhere" finishes building (now that the
+// "anywhere" segment was pulled earlier to ride the zoom-out), so the serif
+// payoff lands sooner and has more room to breathe before the section ends.
+const LINE2_REVEAL_START = ANYWHERE_REVEAL_START + SEG_DURATION + 12; // 604
 const LINE2_DURATION = 44;
 
 // Approximate rendered widths (px) that the appended segments add to line 1.

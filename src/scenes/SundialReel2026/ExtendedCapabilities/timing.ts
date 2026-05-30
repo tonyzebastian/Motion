@@ -48,7 +48,10 @@ export const LAST_CARD_END =
 //      "The smartest member of your team isn't a hire."
 //   3. the "Ask us for a demo" CTA rises in beneath it
 // This makes ExtendedCapabilities the final beat of the reel.
-export const OUTRO_START = LAST_CARD_END + 30;
+// Hold the fully-landed bento grid for a beat before the outro begins, so the
+// complete "spec sheet" layout reads/breathes before the cards fade away into
+// the closing statement + CTA. Bumped 30 -> 90 (≈1s extra hold).
+export const OUTRO_START = LAST_CARD_END + 90;
 export const CARDS_FADE_DURATION = 30;
 export const STATEMENT_DURATION = 26;
 export const CTA_START = OUTRO_START + 26;

@@ -52,7 +52,10 @@ const GUTTER = 40;
 const THREAD_TOP_IN_PHONE = 20;
 
 // Colors
-const WIREFRAME_LINE = 'rgba(0, 0, 0, 0.28)';
+// Brand plum outline (matches the caption / caret / MCP tag), a touch
+// stronger than the old light grey so the thicker stroke reads as a
+// deliberate brand frame. Swap to 'rgba(0, 0, 0, 0.45)' for black instead.
+const WIREFRAME_LINE = 'rgba(83, 29, 89, 0.45)';
 const DIVIDER = 'rgba(0, 0, 0, 0.08)';
 const MUTED = 'rgba(0, 0, 0, 0.45)';
 const TEXT = 'rgba(0, 0, 0, 0.85)';
@@ -397,7 +400,7 @@ export const SlackShell: React.FC = () => {
           height: PHONE_HEIGHT,
           backgroundColor: 'transparent',
           borderRadius: PHONE_RADIUS,
-          border: `1.5px solid ${WIREFRAME_LINE}`,
+          border: `2.5px solid ${WIREFRAME_LINE}`,
           overflow: 'hidden',
         }}
       >

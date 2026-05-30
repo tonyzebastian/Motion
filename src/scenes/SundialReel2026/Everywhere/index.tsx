@@ -34,6 +34,15 @@ import {
   SLACK_MORPH_START,
   TYPEWRITER_END,
   TYPEWRITER_START,
+  ZOOM_ANCHOR_X,
+  ZOOM_ANCHOR_Y,
+  ZOOM_FOCAL_X,
+  ZOOM_FOCAL_Y,
+  ZOOM_IN_END,
+  ZOOM_IN_START,
+  ZOOM_OUT_END,
+  ZOOM_OUT_START,
+  ZOOM_SCALE,
   chromeOpacity,
 } from './timing';
 
@@ -262,36 +271,64 @@ export const Everywhere: React.FC = () => {
   // Single source-of-truth for the chatbox's geometry every frame.
   const visual = getSurfaceVisual(frame);
 
+  // Camera zoom — eases in when @sundial starts typing, holds through the
+  // Sundial MCP beat, then eases back out when the MCP tag is removed. The
+  // translate is scaled by `zoom` so the camera is exact identity at rest
+  // (no pan at scale 1) and only at full zoom maps the mention/MCP slot
+  // (ZOOM_FOCAL) to the on-screen anchor (ZOOM_ANCHOR).
+  const zoom = interpolate(
+    frame,
+    [ZOOM_IN_START, ZOOM_IN_END, ZOOM_OUT_START, ZOOM_OUT_END],
+    [0, 1, 1, 0],
+    { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: seamEase },
+  );
+  const cameraScale = 1 + (ZOOM_SCALE - 1) * zoom;
+  const cameraTx = (ZOOM_ANCHOR_X - ZOOM_SCALE * ZOOM_FOCAL_X) * zoom;
+  const cameraTy = (ZOOM_ANCHOR_Y - ZOOM_SCALE * ZOOM_FOCAL_Y) * zoom;
+
   return (
     <AbsoluteFill style={{ opacity: sectionOpacity }}>
-      {/* Chrome layers — shells + accessories per beat. No chatbox here. */}
-      <BeatChrome opacity={chromeA} topAccessory={<NativePrompt />} />
-      <BeatChrome opacity={chromeB} shell={<SlackShell />} />
-      <BeatChrome opacity={chromeC} shell={<DesktopShell />} />
-      <BeatChrome opacity={chromeD} topAccessory={<NativePrompt />} />
+      {/* Camera group — the chrome layers + chatbox push in together so the
+          @sundial / Sundial MCP slot reads nearer the middle during Beats
+          B/C. The Caption is intentionally OUTSIDE this group (rendered
+          below) so it stays centered and crisp rather than magnifying with
+          the UI. */}
+      <AbsoluteFill
+        style={{
+          transform: `translate(${cameraTx}px, ${cameraTy}px) scale(${cameraScale})`,
+          transformOrigin: '0 0',
+        }}
+      >
+        {/* Chrome layers — shells + accessories per beat. No chatbox here. */}
+        <BeatChrome opacity={chromeA} topAccessory={<NativePrompt />} />
+        <BeatChrome opacity={chromeB} shell={<SlackShell />} />
+        <BeatChrome opacity={chromeC} shell={<DesktopShell />} />
+        <BeatChrome opacity={chromeD} topAccessory={<NativePrompt />} />
 
-      {/* Single chatbox — pixel-locked at (50%, CHATBOX_CENTER_Y), morphs
-          via interpolated surface visuals at every beat seam. */}
-      <AbsoluteFill>
-        <div
-          style={{
-            position: 'absolute',
-            top: CHATBOX_CENTER_Y,
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-          }}
-        >
-          <Chatbox
-            visual={visual}
-            text={text}
-            caretBlink={caretBlink}
-            mentionProgress={mentionProgress}
-            mcpOpacity={mcpOpacity}
-          />
-        </div>
+        {/* Single chatbox — pixel-locked at (50%, CHATBOX_CENTER_Y), morphs
+            via interpolated surface visuals at every beat seam. */}
+        <AbsoluteFill>
+          <div
+            style={{
+              position: 'absolute',
+              top: CHATBOX_CENTER_Y,
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+            }}
+          >
+            <Chatbox
+              visual={visual}
+              text={text}
+              caretBlink={caretBlink}
+              mentionProgress={mentionProgress}
+              mcpOpacity={mcpOpacity}
+            />
+          </div>
+        </AbsoluteFill>
       </AbsoluteFill>
 
-      {/* Caption is persistent across all four beats. */}
+      {/* Caption is persistent across all four beats — kept outside the
+          camera group so it stays centered and unscaled. */}
       <Caption />
     </AbsoluteFill>
   );

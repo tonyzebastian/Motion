@@ -18,6 +18,10 @@ import {
   SundialReel2026Scene,
   SUNDIAL_REEL_2026_DURATION,
 } from "./scenes/SundialReel2026";
+import {
+  SundialLaunch30Scene,
+  SUNDIAL_LAUNCH_30_DURATION,
+} from "./scenes/SundialLaunch30";
 
 // Each <Composition> is an entry in the sidebar!
 
@@ -146,6 +150,14 @@ export const RemotionRoot: React.FC = () => {
 
       {/* Reels */}
       <Folder name="Reels">
+        <Composition
+          id="SundialLaunch30"
+          component={SundialLaunch30Scene}
+          durationInFrames={SUNDIAL_LAUNCH_30_DURATION}
+          fps={60}
+          width={1920}
+          height={1080}
+        />
         <Composition
           id="SundialReel2026"
           component={SundialReel2026Scene}

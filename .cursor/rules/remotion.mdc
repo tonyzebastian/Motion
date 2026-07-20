@@ -1,0 +1,15 @@
+---
+description: Remotion agent workflow — load skills, frame-based motion, docs via remotion-docs
+alwaysApply: true
+---
+
+# Remotion
+
+This repo is a Remotion video project. Follow `AGENTS.md` (includes the official Remotion system prompt).
+
+- Skills live only in `.agents/skills/` (`.cursor/skills` and `.claude/skills` are symlinks — do not duplicate).
+- Default: `remotion-best-practices` → then `remotion-markup` for JSX/animation.
+- Look up APIs with `remotion-docs` (fetch `remotion.dev/docs/<page>.md`). Do not use the deprecated Remotion MCP.
+- Animate only with `useCurrentFrame()` + `interpolate()` / `Easing`. Never CSS/Tailwind animations.
+- Media: `public/` + `staticFile()`; `@remotion/media` for `<Video>`/`<Audio>`; register scenes in `src/Root.tsx`.
+- Keep all `@remotion/*` and `remotion` on the same pinned version.

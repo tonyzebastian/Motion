@@ -41,6 +41,30 @@ npx remotion upgrade
 
 Get started with Remotion by reading the [fundamentals page](https://www.remotion.dev/docs/the-fundamentals).
 
+## AI / coding agents
+
+This repo is set up for Remotion Agent Skills so Cursor, Claude Code, Codex, and similar agents can use Remotion correctly.
+
+**Prerequisites:** Node.js 20+ (skills CLI needs a modern Node; use `nvm use 24` if needed).
+
+**Install or refresh skills**
+
+```console
+npm run skills:add
+# later:
+npm run skills:update
+```
+
+Skills install into `.agents/skills/` only. `.cursor/skills` and `.claude/skills` are symlinks to that folder (`npm run skills:link`). Agent workflow + system prompt: [`AGENTS.md`](./AGENTS.md).
+
+**Recommended local workflow**
+
+1. `npm run dev` — Remotion Studio preview
+2. In a separate agent chat, prompt scene changes (agents should load `remotion-best-practices` / `remotion-markup`)
+3. For API questions, agents should use `/remotion-docs` (the Remotion MCP is deprecated)
+
+Official guide: [Building with Remotion and AI](https://www.remotion.dev/docs/ai/) · [Agent Skills](https://www.remotion.dev/docs/ai/skills) · [Coding agents](https://www.remotion.dev/docs/ai/coding-agents)
+
 ## Help
 
 We provide help on our [Discord server](https://discord.gg/6VzzNDwUwV).

@@ -48,7 +48,19 @@ const maxFocusY =
 const FOCUS_X = Math.min(Math.max(rawFocusX, 0), maxFocusX);
 const FOCUS_Y = Math.min(Math.max(rawFocusY, 0), maxFocusY);
 
-export const PlaybooksScene: React.FC = () => {
+type PlaybooksSceneProps = {
+  /**
+   * When false, the decorative scene wallpaper is omitted so the floating
+   * browser window can sit on top of whatever the parent composition
+   * provides (e.g. the reel's mesh gradient). Defaults to true to keep
+   * the standalone composition unchanged.
+   */
+  showBackground?: boolean;
+};
+
+export const PlaybooksScene: React.FC<PlaybooksSceneProps> = ({
+  showBackground = true,
+}) => {
   const frame = useCurrentFrame();
 
   // Snappy ease-out for both directions
@@ -120,7 +132,7 @@ export const PlaybooksScene: React.FC = () => {
 
   return (
     <AbsoluteFill>
-      <Background />
+      {showBackground && <Background />}
       <BrowserWindow
         url="app.sundial.ai"
         zoom={zoom}

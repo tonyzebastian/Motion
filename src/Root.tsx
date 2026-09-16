@@ -9,8 +9,19 @@ import { ForwardDeploymentScene } from "./scenes/ForwardDeployment";
 import { RichContextScene } from "./scenes/RichContext";
 import { GoldenTableScene } from "./scenes/GoldenTable";
 import { PlaybooksScene } from "./scenes/Playbooks";
+import { PlaybooksCleanScene } from "./scenes/PlaybooksClean";
 import { PlaybooksAngle2Scene } from "./scenes/PlaybooksAngle2";
 import { PlaybooksAngle2_1Scene } from "./scenes/PlaybooksAngle2_1";
+import { PlaybooksTrustSignalScene } from "./scenes/PlaybooksTrustSignal";
+import { PlaybooksCitationsScene } from "./scenes/PlaybooksCitations";
+import {
+  SundialReel2026Scene,
+  SUNDIAL_REEL_2026_DURATION,
+} from "./scenes/SundialReel2026";
+import {
+  SundialLaunch30Scene,
+  SUNDIAL_LAUNCH_30_DURATION,
+} from "./scenes/SundialLaunch30";
 
 // Each <Composition> is an entry in the sidebar!
 
@@ -96,6 +107,14 @@ export const RemotionRoot: React.FC = () => {
           height={900}
         />
         <Composition
+          id="PlaybooksClean"
+          component={PlaybooksCleanScene}
+          durationInFrames={1310}
+          fps={30}
+          width={1168}
+          height={668}
+        />
+        <Composition
           id="PlaybooksAngle2"
           component={PlaybooksAngle2Scene}
           durationInFrames={380}
@@ -110,6 +129,42 @@ export const RemotionRoot: React.FC = () => {
           fps={30}
           width={1280}
           height={900}
+        />
+        <Composition
+          id="PlaybooksTrustSignal"
+          component={PlaybooksTrustSignalScene}
+          durationInFrames={640}
+          fps={60}
+          width={1280}
+          height={900}
+        />
+        <Composition
+          id="PlaybooksCitations"
+          component={PlaybooksCitationsScene}
+          durationInFrames={340}
+          fps={60}
+          width={1280}
+          height={900}
+        />
+      </Folder>
+
+      {/* Reels */}
+      <Folder name="Reels">
+        <Composition
+          id="SundialLaunch30"
+          component={SundialLaunch30Scene}
+          durationInFrames={SUNDIAL_LAUNCH_30_DURATION}
+          fps={60}
+          width={1920}
+          height={1080}
+        />
+        <Composition
+          id="SundialReel2026"
+          component={SundialReel2026Scene}
+          durationInFrames={SUNDIAL_REEL_2026_DURATION}
+          fps={60}
+          width={1920}
+          height={1080}
         />
       </Folder>
     </>

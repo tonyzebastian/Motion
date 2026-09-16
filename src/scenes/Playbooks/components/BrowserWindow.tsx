@@ -14,6 +14,32 @@ type BrowserWindowProps = {
   url?: string;
   /** Body content rendered below the header. */
   children?: React.ReactNode;
+  /**
+   * Optional inset between the window and the composition edges. Defaults
+   * to the Screen-Studio-style padding from LAYOUT. Set all to 0 to make
+   * the window fill the composition (used by the trimmed clean scene).
+   */
+  paddingX?: number;
+  paddingTop?: number;
+  paddingBottom?: number;
+  /**
+   * Whether to render the Safari-style header (nav controls + address
+   * bar) on top of the body. Defaults to true. Set to false for trimmed
+   * scenes that just want the body content with no chrome.
+   */
+  showHeader?: boolean;
+  /**
+   * Corner radius of the window. Defaults to LAYOUT.windowRadius
+   * (Safari-style rounded). Set to 0 for trimmed scenes that should
+   * fill the composition edge-to-edge with sharp corners.
+   */
+  radius?: number;
+  /**
+   * Whether to render the drop-shadow stack. Defaults to true. Set to
+   * false when the window fills the composition (no surrounding
+   * background) so the shadow doesn't get clipped/wasted.
+   */
+  showShadow?: boolean;
 };
 
 /**
@@ -30,14 +56,20 @@ export const BrowserWindow: React.FC<BrowserWindowProps> = ({
   focusY = 0.5,
   url,
   children,
+  paddingX = LAYOUT.windowPaddingX,
+  paddingTop = LAYOUT.windowPaddingTop,
+  paddingBottom = LAYOUT.windowPaddingBottom,
+  showHeader = true,
+  radius = LAYOUT.windowRadius,
+  showShadow = true,
 }) => {
   return (
     <AbsoluteFill
       style={{
-        paddingLeft: LAYOUT.windowPaddingX,
-        paddingRight: LAYOUT.windowPaddingX,
-        paddingTop: LAYOUT.windowPaddingTop,
-        paddingBottom: LAYOUT.windowPaddingBottom,
+        paddingLeft: paddingX,
+        paddingRight: paddingX,
+        paddingTop,
+        paddingBottom,
       }}
     >
       <div
@@ -53,18 +85,20 @@ export const BrowserWindow: React.FC<BrowserWindowProps> = ({
             width: '100%',
             height: '100%',
             backgroundColor: COLORS.white,
-            borderRadius: LAYOUT.windowRadius,
-            boxShadow: [
-              '0 1px 0 rgba(255,255,255,0.6) inset',
-              '0 30px 60px -15px rgba(60,40,80,0.25)',
-              '0 12px 30px -10px rgba(60,40,80,0.18)',
-            ].join(', '),
+            borderRadius: radius,
+            boxShadow: showShadow
+              ? [
+                  '0 1px 0 rgba(255,255,255,0.6) inset',
+                  '0 30px 60px -15px rgba(60,40,80,0.25)',
+                  '0 12px 30px -10px rgba(60,40,80,0.18)',
+                ].join(', ')
+              : undefined,
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
           }}
         >
-          <BrowserHeader url={url} />
+          {showHeader ? <BrowserHeader url={url} /> : null}
           <div
             style={{
               flex: 1,

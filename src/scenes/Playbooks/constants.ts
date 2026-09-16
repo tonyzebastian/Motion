@@ -530,6 +530,76 @@ export const REPORT_PALETTE = {
   sectionBackground: '#fbfbfd',
 } as const;
 
+// ============================================
+// Citation registry (artifact "trust signal" annotations)
+// ============================================
+//
+// Inline [N] markers rendered next to numeric values in the artifact
+// report. Hovering a marker surfaces a popover with the source table,
+// a "TABLE" badge, a one-line description, and a (decorative) "View
+// SQL" button -- the book-style "reference 1" footnote pattern. The
+// full set lives here so table names / descriptions stay in one place.
+export type Citation = {
+  index: number;
+  /** Source dataset name shown in bold at the top of the popover. */
+  tableName: string;
+  /** Pill label next to the table name (always "TABLE" for now). */
+  badge: string;
+  /** One-line provenance description. */
+  description: string;
+};
+
+export const CITATIONS: Record<number, Citation> = {
+  1: {
+    index: 1,
+    tableName: 'mau_daily',
+    badge: 'TABLE',
+    description: 'Daily monthly active user count',
+  },
+  2: {
+    index: 2,
+    tableName: 'growth_accounting',
+    badge: 'TABLE',
+    description: 'MAU retained component, daily',
+  },
+  3: {
+    index: 3,
+    tableName: 'growth_accounting',
+    badge: 'TABLE',
+    description: 'MAU resurrected component, daily',
+  },
+  4: {
+    index: 4,
+    tableName: 'growth_accounting',
+    badge: 'TABLE',
+    description: 'MAU new component, daily',
+  },
+  5: {
+    index: 5,
+    tableName: 'growth_accounting',
+    badge: 'TABLE',
+    description: 'MAU churned (28-day) component, daily',
+  },
+  6: {
+    index: 6,
+    tableName: 'growth_accounting',
+    badge: 'TABLE',
+    description: 'YoY MAU comparison, Apr 2025 vs Apr 2026',
+  },
+  7: {
+    index: 7,
+    tableName: 'growth_accounting',
+    badge: 'TABLE',
+    description: 'Net flow: new + resurrected - churned, daily avg',
+  },
+  8: {
+    index: 8,
+    tableName: 'churn_scenarios',
+    badge: 'TABLE',
+    description: 'Modeled MAU lift from 10% churn reduction',
+  },
+};
+
 // "Current MAU Composition" card -- 5 metric tiles. Order, values, and
 // per-tile color match lines 287..312 of the source HTML.
 export type MauStatTile = {
@@ -537,6 +607,8 @@ export type MauStatTile = {
   label: string;
   change: string;
   color: string;
+  /** Optional citation index annotated next to the value (see CITATIONS). */
+  citation?: number;
 };
 
 export const MAU_COMPOSITION_STATS: MauStatTile[] = [
@@ -545,30 +617,35 @@ export const MAU_COMPOSITION_STATS: MauStatTile[] = [
     label: 'Total MAU',
     change: '+25.6% YoY',
     color: REPORT_PALETTE.brandPurple,
+    citation: 1,
   },
   {
     value: '39,489',
     label: 'Retained (76.0%)',
     change: '+19.2% YoY',
     color: REPORT_PALETTE.brandTeal,
+    citation: 2,
   },
   {
     value: '7,515',
     label: 'Resurrected (14.5%)',
     change: '+66.6% YoY',
     color: REPORT_PALETTE.brandBlue,
+    citation: 3,
   },
   {
     value: '4,951',
     label: 'New (9.5%)',
     change: '+32.1% YoY',
     color: REPORT_PALETTE.brandPurple,
+    citation: 4,
   },
   {
     value: '12,711',
     label: 'Churned (28-day)',
     change: 'Churn rate down to 24.5% (was 29.7%)',
     color: REPORT_PALETTE.brandOrange,
+    citation: 5,
   },
 ];
 
@@ -580,6 +657,8 @@ export type ProseSegment = {
   text: string;
   color?: string;
   bold?: boolean;
+  /** Optional citation index annotated after this segment (see CITATIONS). */
+  citation?: number;
 };
 
 export const REPORT_INTRO_PROSE: ProseSegment[] = [
@@ -588,6 +667,7 @@ export const REPORT_INTRO_PROSE: ProseSegment[] = [
     text: '25.6% year-over-year',
     color: REPORT_PALETTE.brandTeal,
     bold: true,
+    citation: 6,
   },
   { text: ' from ~41.4K to ~52.0K. The analysis of four strategic growth levers — new acquisition, retention, churn reduction, and resurrection — reveals that ' },
   {
@@ -599,6 +679,7 @@ export const REPORT_INTRO_PROSE: ProseSegment[] = [
     text: '−245 users/day',
     color: REPORT_PALETTE.brandOrange,
     bold: true,
+    citation: 7,
   },
   { text: ', meaning the user base is growing primarily because the retained base is expanding — but that can\u2019t continue indefinitely without fixing the inflow/outflow imbalance.' },
 ];
@@ -614,7 +695,7 @@ export type LeverCard = {
   title: string;
   borderColor: string;
   body: string;
-  impacts: { value: string; label: string }[];
+  impacts: { value: string; label: string; citation?: number }[];
 };
 
 export const REPORT_LEVERS: LeverCard[] = [
@@ -624,7 +705,7 @@ export const REPORT_LEVERS: LeverCard[] = [
     borderColor: REPORT_PALETTE.brandOrange,
     body: 'Currently ~12,711 users churn every 28-day cycle. This is the largest single drain on the user base and exceeds new user acquisition + resurrection combined.',
     impacts: [
-      { value: '+1,271', label: 'MAU gain from 10% churn reduction' },
+      { value: '+1,271', label: 'MAU gain from 10% churn reduction', citation: 8 },
       { value: '+2,542', label: 'MAU gain from 20% churn reduction' },
       { value: '+4,277', label: 'MAU gain if churn returns to Jul 2025 lows' },
     ],

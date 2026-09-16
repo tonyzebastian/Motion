@@ -6,8 +6,63 @@ import {
   REPORT_LEVERS,
   REPORT_PALETTE,
 } from '../constants';
+import { CitationMarker } from '../../PlaybooksCitations/components/CitationMarker';
 
 const FONT_FAMILY = "'Work Sans', system-ui, sans-serif";
+
+// ---- Citation rendering config (threaded via context) ----
+//
+// ArtifactReport is rendered by three scenes (Playbooks, TrustSignal,
+// Citations). Only the Citations scene passes citation props; the
+// others get the defaults (gate 0 -> no markers render), so their
+// output is unchanged.
+type CitationRenderConfig = {
+  /** Effective 0..1 opacity for a given citation index (0 = hidden). */
+  getOpacity: (index: number) => number;
+  /** Index of the citation whose popover is currently shown, if any. */
+  hoveredIndex?: number;
+  /** Popover element anchored next to the hovered marker. */
+  popoverNode?: React.ReactNode;
+};
+
+const CitationContext = React.createContext<CitationRenderConfig | null>(null);
+
+/**
+ * Inline `[N]` marker for a cited value. Renders nothing unless the
+ * Citations scene has activated the citation layer. When this marker is
+ * the hovered one, it wraps itself in a positioning context and renders
+ * the popover as a sibling.
+ */
+const InlineCitation: React.FC<{ index?: number }> = ({ index }) => {
+  const cfg = React.useContext(CitationContext);
+  if (!cfg || index === undefined) return null;
+  const opacity = cfg.getOpacity(index);
+  if (opacity <= 0) return null;
+  const highlighted = cfg.hoveredIndex === index;
+
+  if (highlighted && cfg.popoverNode) {
+    return (
+      <span style={{ position: 'relative', display: 'inline-block' }}>
+        <CitationMarker index={index} opacity={opacity} highlighted />
+        {cfg.popoverNode}
+      </span>
+    );
+  }
+  return (
+    <CitationMarker index={index} opacity={opacity} highlighted={highlighted} />
+  );
+};
+
+type ArtifactReportProps = {
+  /** Global gate / opacity applied to every marker (default 0 = off). */
+  citationsOpacity?: number;
+  /** Per-index opacity override (for staggered fade-in). */
+  citationOpacities?: Record<number, number>;
+  /** Index whose popover is currently shown. */
+  hoveredCitationIndex?: number;
+  /** Popover element rendered next to the hovered marker. */
+  popoverNode?: React.ReactNode;
+};
 
 /**
  * React reconstruction of the visible portion of the HTML artifact
@@ -18,21 +73,39 @@ const FONT_FAMILY = "'Work Sans', system-ui, sans-serif";
  * area has real depth.
  *
  * No animation lives here; the panel is mounted once Phase 7 opens and
- * stays static for the rest of the scene.
+ * stays static for the rest of the scene. The optional citation props
+ * drive the inline `[N]` annotation layer used by the Citations scene.
  */
-export const ArtifactReport: React.FC = () => {
+export const ArtifactReport: React.FC<ArtifactReportProps> = ({
+  citationsOpacity = 0,
+  citationOpacities,
+  hoveredCitationIndex,
+  popoverNode,
+}) => {
+  const citationConfig = React.useMemo<CitationRenderConfig>(
+    () => ({
+      getOpacity: (index: number) =>
+        citationOpacities?.[index] ?? citationsOpacity,
+      hoveredIndex: hoveredCitationIndex,
+      popoverNode,
+    }),
+    [citationsOpacity, citationOpacities, hoveredCitationIndex, popoverNode],
+  );
+
   return (
-    <div
-      style={{
-        padding: '32px 28px 40px',
-        fontFamily: FONT_FAMILY,
-        color: REPORT_PALETTE.bodyText,
-      }}
-    >
-      <SummarySection />
-      <MauCompositionCard />
-      <LeversSection />
-    </div>
+    <CitationContext.Provider value={citationConfig}>
+      <div
+        style={{
+          padding: '32px 28px 40px',
+          fontFamily: FONT_FAMILY,
+          color: REPORT_PALETTE.bodyText,
+        }}
+      >
+        <SummarySection />
+        <MauCompositionCard />
+        <LeversSection />
+      </div>
+    </CitationContext.Provider>
   );
 };
 
@@ -70,15 +143,17 @@ const SummarySection: React.FC = () => (
       }}
     >
       {REPORT_INTRO_PROSE.map((seg, i) => (
-        <span
-          key={i}
-          style={{
-            color: seg.color,
-            fontWeight: seg.bold ? 600 : 400,
-          }}
-        >
-          {seg.text}
-        </span>
+        <React.Fragment key={i}>
+          <span
+            style={{
+              color: seg.color,
+              fontWeight: seg.bold ? 600 : 400,
+            }}
+          >
+            {seg.text}
+          </span>
+          <InlineCitation index={seg.citation} />
+        </React.Fragment>
       ))}
     </p>
   </section>
@@ -135,6 +210,7 @@ const StatTile: React.FC<{ stat: (typeof MAU_COMPOSITION_STATS)[number] }> = ({
       }}
     >
       {stat.value}
+      <InlineCitation index={stat.citation} />
     </div>
     <div
       style={{
@@ -253,6 +329,7 @@ const LeverCardView: React.FC<{ lever: LeverCard }> = ({ lever }) => (
             }}
           >
             {impact.value}
+            <InlineCitation index={impact.citation} />
           </div>
           <div
             style={{

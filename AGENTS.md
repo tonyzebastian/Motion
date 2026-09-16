@@ -20,11 +20,14 @@ After `npm run skills:add` or `npm run skills:update`, run `npm run skills:link`
 | Writing/editing scene JSX, animation, timing, media, fonts | `remotion-markup` |
 | Captions / subtitles | `remotion-captions` |
 | Render / still / CLI output | `remotion-render` |
+| Studio preview / CLI flags | `remotion-studio` |
 | Studio editability (`Interactive`, write-back) | `remotion-interactivity` |
 | New composition or blank project | `remotion-create` |
 | Player, Lambda, SaaS / product integration | `remotion-saas` |
-| Media metadata, trim/crop in browser | `mediabunny` |
+| Maps (Mapbox, MapLibre, MapTiler, Cesium) | `remotion-maps` |
+| Media metadata, trim/crop in browser | `remotion-multimedia` |
 | Current API / docs lookup | `remotion-docs` |
+| Upgrade Remotion, related packages, and skills | `remotion-upgrade` |
 
 The Remotion MCP is deprecated — use `/remotion-docs` (Algolia search + fetch `https://www.remotion.dev/docs/<page>.md`).
 

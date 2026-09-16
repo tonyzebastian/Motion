@@ -9,3 +9,7 @@ import { enableTailwind } from '@remotion/tailwind-v4';
 Config.setVideoImageFormat("jpeg");
 Config.setOverwriteOutput(true);
 Config.overrideWebpackConfig(enableTailwind);
+
+// Required so WebGL shaders (e.g. @paper-design/shaders-react MeshGradient
+// in the SundialReel2026 scene) work in Chromium during headless renders.
+Config.setChromiumOpenGlRenderer("angle");

@@ -27,7 +27,12 @@ import {
   WORLD_CLASS_ANALYST_DURATION,
 } from "./scenes/WorldClassAnalyst";
 import { SundialLogoScene, SUNDIAL_LOGO_DURATION } from "./scenes/SundialLogo";
-import { RisoBouquetScene, RISO_BOUQUET_DURATION } from "./scenes/RisoCanvas";
+import {
+  RisoBouquetScene,
+  RISO_BOUQUET_DURATION,
+  RisoRoomScene,
+  RISO_ROOM_DURATION,
+} from "./scenes/RisoCanvas";
 
 // Each <Composition> is an entry in the sidebar!
 
@@ -198,6 +203,15 @@ export const RemotionRoot: React.FC = () => {
           fps={30}
           width={1200}
           height={1500}
+          defaultProps={{}}
+        />
+        <Composition
+          id="RisoRoom"
+          component={RisoRoomScene}
+          durationInFrames={RISO_ROOM_DURATION}
+          fps={30}
+          width={1280}
+          height={900}
           defaultProps={{}}
         />
       </Folder>

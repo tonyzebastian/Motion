@@ -13,3 +13,6 @@ Config.overrideWebpackConfig(enableTailwind);
 // Required so WebGL shaders (e.g. @paper-design/shaders-react MeshGradient
 // in the SundialReel2026 scene) work in Chromium during headless renders.
 Config.setChromiumOpenGlRenderer("angle");
+Config.setDefaultEditor('vscode');
+Config.setDefaultCodingAgent('codex');
+Config.setPublicLicenseKey('free-license');

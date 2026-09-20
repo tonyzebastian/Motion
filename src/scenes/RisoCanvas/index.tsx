@@ -102,3 +102,5 @@ export const RisoBouquetScene: React.FC = () => {
 };
 
 export const RISO_BOUQUET_DURATION = LOOP * 30;
+
+export { RisoRoomScene, RISO_ROOM_DURATION } from "./Room";

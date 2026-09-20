@@ -44,16 +44,27 @@ node tools/render.mjs room 3.2 room.png
 node tools/verify.mjs
 ```
 
-`verify.mjs` output on this package, for comparison after you change anything:
+`verify.mjs` covers both scenes. Output on this package, for comparison after
+you change anything:
 
 ```
-build: 177ms | sprites: 312 (255 multiply) | atlas: 2048x1300
+BOUQUET  (16s loop, sprite-cached)
+build: 194ms | sprites: 312 (255 multiply) | atlas: 2048x1300
 1. cache fidelity        mean 0.101  >16: 0.111%   PASS
 2. loop closure          mean 0.000  max 0         PASS
 3. frame determinism     max 0                     PASS
 4. shimmer               0.37% of pixels changing  PASS
-5. frame cost            23.1ms                    PASS
+5. frame cost            9.7ms                     PASS
+
+ROOM  (22s loop, drawn live - no sprite cache)
+2. loop closure          0.00% differing  max 0    PASS
+3. frame determinism     max 0                     PASS
+5. frame cost            36.8ms                    PASS
 ```
+
+Check 2 is the one that matters most for video and check 3 for Remotion
+specifically: the same frame reached in any order must be pixel-identical,
+because parallel workers render frames out of order.
 
 Or just open `scenes/bouquet/bouquet.html` / `scenes/room/room.html` in a
 browser. They are self-contained, no build step, no server.
@@ -117,9 +128,19 @@ shoves back → a slow two-turn think → rolls in → types again).
 `pen.shell(ROOM)` draws floor and walls. The browser runtime adds pan, zoom and
 PNG export.
 
-This one is **not** sprite-cached — it redraws live at 12fps with the boil off,
-which is affordable because it is simpler than the bouquet. If you want it in
-Remotion at 30fps, either cache it the same way or check the frame cost first.
+This one is **not** sprite-cached — it redraws live, about 37ms a frame at
+1280x900. That is fine for 30fps offline rendering in Remotion but too slow for a
+smooth interactive page at full size, which is why the browser runtime redraws
+only on camera or frame change. If you need it cheaper, cache it the way the
+bouquet is cached.
+
+Its 22-second loop closes exactly, but that was **fixed after the fact** — the
+scene originally used raw frequencies (`Math.sin(t * 1.4)`, a continuously
+rotating clock hand, value noise for the lamp flicker) and none of them returned
+to their starting state. `HZ(f)` snaps a frequency to the nearest harmonic of
+`LOOP`, and `nseLoop(t, turns, seed)` samples value noise around a circle, which
+is the only way to get a periodic wobble out of noise. Use both if you add
+motion, and re-run `verify.mjs`.
 
 ## Things that will bite you
 

@@ -4,6 +4,14 @@
    Strictly back to front: walls -> floor -> standing things
    sorted by (i+j) -> things on top of things -> air.
    ============================================================ */
+/* Every motion in the room has to be a harmonic of LOOP or the scene will not
+   return to its starting state — fine on a page, but a video of it jumps at the
+   wrap. HZ snaps a frequency to the nearest harmonic; nseLoop samples value
+   noise around a circle, which is the only way to get a periodic wobble out of
+   it. Both keep the original speed to within a few percent. */
+const HZ = f => Math.max(1, Math.round(f * LOOP / TAU)) * TAU / LOOP;
+const nseLoop = (t, turns, seed) => { const a = TAU * t / LOOP; return noise(Math.cos(a) * turns, Math.sin(a) * turns, seed); };
+
 const ROOM = { w: 6.6, d: 6.2, h: 3.0, style: { floor: ['coral', .5], wall: ['blue', .3], wall2: ['blue', .4], plank: .8 } };
 
 function drawScene(pen, t) {
@@ -22,7 +30,7 @@ function drawScene(pen, t) {
     pen.fill(wq('j', u0, z0, ww, wh), 'blue', .82);                       // night outside
     for (let k = 0; k < 26; k++) {                                        // city lights on the far side
       const Rs = stream('city', k), u = rand(Rs, u0 + .1, u0 + ww - .1), z = rand(Rs, z0 + .1, z0 + wh - .5);
-      const tw = .45 + .55 * Math.sin(t * 1.6 + k * 2.3);
+      const tw = .45 + .55 * Math.sin(t * HZ(1.6) + k * 2.3);
       pen.dot(...onJ(u, z), rand(Rs, .7, 1.6), 'yellow', .55 + tw * .45);
     }
     const moon = Array.from({ length: 20 }, (_, k) => { const a = k / 20 * Math.PI * 2; return onJ(u0 + 1.58 + Math.cos(a) * .16, z0 + 1.08 + Math.sin(a) * .18); });
@@ -34,7 +42,7 @@ function drawScene(pen, t) {
     // a small plant on the sill, leaning into the light
     for (let k = 0; k < 5; k++) {
       const a = -1.9 + k * .38, L = 11 + k % 3 * 4, [x, y] = onJ(u0 + .35, z0 - .02);
-      pen.shape(pen.leaf([x, y], [x + Math.cos(a) * L + Math.sin(t * 1.1 + k) * 1.2, y + Math.sin(a) * L], 3.4), ['teal', .7 + k * .04], { w: .7 });
+      pen.shape(pen.leaf([x, y], [x + Math.cos(a) * L + Math.sin(t * HZ(1.1) + k) * 1.2, y + Math.sin(a) * L], 3.4), ['teal', .7 + k * .04], { w: .7 });
     }
   }
 
@@ -112,7 +120,7 @@ function drawScene(pen, t) {
     pen.shape(disc, ['paper', 0], { w: 1.4 });
     const [cx, cy] = onI(cu, cz);
     pen.line([[cx, cy], [cx + 7, cy - 6]], 'blue', 1.4, { amp: .15 });
-    const a = t * .55;
+    const a = TAU * 2 * t / LOOP;                       // two whole turns per loop
     pen.line([[cx, cy], [cx + Math.cos(a) * 11, cy + Math.sin(a) * 11]], 'coral', 1, { amp: .15 });
     pen.dot(cx, cy, 1.4, 'blue');
   }
@@ -152,7 +160,7 @@ function drawScene(pen, t) {
     const i = 4.55, j = .5;
     pen.box(i, j, 0, .48, .78, 1.0, { ink: 'blue', tone: .9 });
     for (let k = 0; k < 5; k++) {
-      const [x, y] = p(i + .02, j + .78, .78 - k * .13), on = .35 + .65 * Math.max(0, Math.sin(t * 2.4 - k * .8));
+      const [x, y] = p(i + .02, j + .78, .78 - k * .13), on = .35 + .65 * Math.max(0, Math.sin(t * HZ(2.4) - k * .8));
       pen.knock([[x + 4, y - 2], [x + 12, y - 2], [x + 12, y + 2], [x + 4, y + 2]], .5 * on);
       pen.dot(x + 8, y, 1.8, k === 2 ? 'coral' : 'teal', .35 + on * .65);
     }
@@ -177,11 +185,12 @@ function drawScene(pen, t) {
   // monitor 1: an editor, scrolling
   screenGlow(1.0, 1.7);
   monitor(1.0, 1.7, .95, (sp, sw, sh) => {
-    const rows = 22, step = sh / 9, Rc = stream('code');
+    const rows = 18, step = sh / 9, Rc = stream('code');   // 18 so the scroll wraps on the loop
+    const CRATE = rows / (9 * LOOP);
     const lines = Array.from({ length: rows }, () => ({ ind: pick(Rc, [0, 0, .08, .16, .16, .24]), toks: Array.from({ length: randi(Rc, 2, 5) }, () => [rand(Rc, .09, .3), pick(Rc, ['teal', 'coral', 'yellow', 'paper'])]) }));
-    const scroll = (t * .16) % 1;
+    const scroll = (t * CRATE) % 1;
     for (let k = 0; k < 9; k++) {
-      const L = lines[(k + Math.floor(t * .16 * 9)) % rows], b = sh - .07 - (k - scroll) * step;
+      const L = lines[(k + Math.floor(t * CRATE * 9)) % rows], b = sh - .07 - (k - scroll) * step;
       if (b < .05 || b > sh - .05) continue;
       let a = .08 + L.ind;
       for (const [w, ink] of L.toks) {
@@ -193,7 +202,7 @@ function drawScene(pen, t) {
     }
     // gutter + a blinking caret
     for (let k = 0; k < 9; k++) pen.dot(...sp(.045, sh - .05 - k * step), .8, 'teal', .5);
-    if (Math.sin(t * 5) > 0) { const q = [sp(.5, sh - .38), sp(.53, sh - .38), sp(.53, sh - .33), sp(.5, sh - .33)]; pen.knock(q, .9); pen.tint(q, 'yellow', .9); }
+    if (Math.sin(t * HZ(5)) > 0) { const q = [sp(.5, sh - .38), sp(.53, sh - .38), sp(.53, sh - .33), sp(.5, sh - .33)]; pen.knock(q, .9); pen.tint(q, 'yellow', .9); }
   });
 
   // monitor 2: a dashboard that is not going in the right direction
@@ -201,12 +210,12 @@ function drawScene(pen, t) {
   monitor(2.95, 1.4, .82, (sp, sw, sh) => {
     const bars = 11, bw = (sw - .22) / bars;
     for (let k = 0; k < bars; k++) {
-      const hgt = (.12 + .5 * (.5 + .5 * Math.sin(k * 1.3 + t * .9)) * (k / bars * .7 + .4)) * sh;
+      const hgt = (.12 + .5 * (.5 + .5 * Math.sin(k * 1.3 + t * HZ(.9))) * (k / bars * .7 + .4)) * sh;
       const a = .11 + k * bw, q = [sp(a, .12), sp(a + bw * .68, .12), sp(a + bw * .68, .12 + hgt), sp(a, .12 + hgt)];
       pen.knock(q, .8); pen.tint(q, k > bars - 3 ? 'coral' : 'teal', .85);
     }
     pen.line([sp(.09, .1), sp(sw - .09, .1)], 'paper', .8, { tone: .7, amp: .1 });
-    const pts = Array.from({ length: 12 }, (_, k) => sp(.11 + k * (sw - .22) / 11, sh - .22 + Math.sin(k * .9 + t * .6) * .05));
+    const pts = Array.from({ length: 12 }, (_, k) => sp(.11 + k * (sw - .22) / 11, sh - .22 + Math.sin(k * .9 + t * HZ(.6)) * .05));
     pen.line(pts, 'yellow', 1.2, { amp: .3 });
   });
 
@@ -220,7 +229,7 @@ function drawScene(pen, t) {
       pen.tint(pen.floorQuad(a, b, .07, .05, deskTop + .051), 'blue', rand(Rk, .5, .85));
     }
     // two fingers tapping
-    const tap = Math.sin(t * 9) > 0 ? 1 : 0;
+    const tap = Math.sin(t * HZ(9)) > 0 ? 1 : 0;
     pen.dot(...p(i + .45, j + .16, deskTop + .07 + tap * .02), 2.2, 'coral', .35);
     pen.dot(...p(i + .72, j + .2, deskTop + .07 + (1 - tap) * .02), 2.2, 'coral', .35);
   }
@@ -232,7 +241,7 @@ function drawScene(pen, t) {
     pen.line([[x + 5.5, y - 5], [x + 10, y - 7], [x + 5.5, y - 11]], 'coral', 1.4);
     pen.shape(pen.circle(x, y - 15, 5.3, 12), ['blue', .9], { w: .8, amp: .15 });
     for (let k = 0; k < 2; k++) {
-      const P = [], ph = t * 1.5 + k * 1.8;
+      const P = [], ph = t * HZ(1.5) + k * 1.8;
       for (let s = 0; s <= 9; s++) { const u = s / 9; P.push([x + (k - .5) * 4 + Math.sin(ph * 3 + u * 5) * 2.4 * u, y - 18 - u * 17]); }
       pen.line(P, 'blue', .8, { tone: .5, amp: .2 });
     }
@@ -244,7 +253,7 @@ function drawScene(pen, t) {
     pen.line([p(i - .1, j + .56, deskTop + .01), p(i + .32, j + .46, deskTop + .01)], 'coral', 2.2, { amp: .15 });
   }
   { // clamp lamp over the desk, flickering very slightly
-    const i = .92, j = .5, h = 1.45, fl = .94 + .06 * noise(t * 2.2, 0, 77);
+    const i = .92, j = .5, h = 1.45, fl = .94 + .06 * nseLoop(t, 8, 77);
     pen.line([p(i, j, deskTop), p(i, j, deskTop + h)], 'blue', 1.6, { amp: .2 });
     pen.line([p(i, j, deskTop + h), p(i + .75, j + .25, deskTop + h - .18)], 'blue', 1.6, { amp: .2 });
     const [sx, sy] = p(i + .75, j + .25, deskTop + h - .18);
@@ -258,7 +267,7 @@ function drawScene(pen, t) {
     pen.box(i - .13, j - .13, deskTop, .26, .26, .2, { ink: 'coral', tone: .6, shadow: false, w: .8 });
     const Rp = stream('deskplant');
     for (let k = 0; k < 7; k++) {
-      const a = -Math.PI / 2 + rand(Rp, -1.1, 1.1), L = rand(Rp, 9, 17), sway = Math.sin(t * 1.3 + k) * 1.1;
+      const a = -Math.PI / 2 + rand(Rp, -1.1, 1.1), L = rand(Rp, 9, 17), sway = Math.sin(t * HZ(1.3) + k) * 1.1;
       pen.shape(pen.leaf([x, y], [x + Math.cos(a) * L + sway, y + Math.sin(a) * L], rand(Rp, 2.6, 4.2)), ['teal', rand(Rp, .6, .95)], { w: .7 });
     }
   }
@@ -272,7 +281,7 @@ function drawScene(pen, t) {
      6. THE REST OF THE ROOM, back to front by (i+j)
      --------------------------------------------------------- */
   { // floor lamp, right corner
-    const i = 5.85, j = .95, h = 1.85, fl = .92 + .08 * noise(t * 2.6, 3, 11);
+    const i = 5.85, j = .95, h = 1.85, fl = .92 + .08 * nseLoop(t, 9, 11);
     pen.glow(i, j, 0, 1.1, 'yellow', .3 * fl);
     pen.fill(pen.ellipse(i, j, 0, .24), 'blue', .75);
     pen.line([p(i, j, 0), p(i, j, h)], 'blue', 1.5, { amp: .2 });
@@ -291,7 +300,7 @@ function drawScene(pen, t) {
     const i = .5, j = 5.3, [x, y] = p(i, j, .48), Rp = stream('bigplant');
     pen.box(i - .32, j - .32, 0, .64, .64, .5, { ink: 'yellow', tone: .6 });
     for (let k = 0; k < 13; k++) {
-      const a = -Math.PI / 2 + rand(Rp, -1.35, 1.35), L = rand(Rp, 20, 44), sway = Math.sin(t * 1.1 + k * .7) * 2;
+      const a = -Math.PI / 2 + rand(Rp, -1.35, 1.35), L = rand(Rp, 20, 44), sway = Math.sin(t * HZ(1.1) + k * .7) * 2;
       pen.shape(pen.leaf([x, y], [x + Math.cos(a) * L + sway, y + Math.sin(a) * L], rand(Rp, 4.5, 8)), ['teal', rand(Rp, .55, .95)], { w: .8 });
     }
   }
@@ -302,7 +311,7 @@ function drawScene(pen, t) {
     pen.shape(pen.blob(x, cy, 17, 9, 'cat', .1), ['blue', .85], { w: 1 });
     pen.shape([[x + 9, cy - 5], [x + 12, cy - 13], [x + 15, cy - 5]], ['blue', .85], { w: .9 });
     pen.shape([[x + 15, cy - 5], [x + 18, cy - 12], [x + 20, cy - 3]], ['blue', .85], { w: .9 });
-    const fl = Math.sin(t * 1.7) * 3;
+    const fl = Math.sin(t * HZ(1.7)) * 3;
     pen.line([[x - 15, cy + 3], [x - 22, cy + 1 + fl], [x - 19, cy - 6 + fl]], 'blue', 2.4, { amp: .2, tone: .9 });
     pen.dot(x + 16, cy - 4, 1, 'yellow');
   }
@@ -357,9 +366,9 @@ function drawScene(pen, t) {
      --------------------------------------------------------- */
   for (let k = 0; k < 16; k++) {
     const Rd = stream('dust', k), i = rand(Rd, .6, 5.4), j = rand(Rd, .4, 3.4), base = rand(Rd, .5, 2.3);
-    const u = (t * rand(Rd, .04, .1) + Rd()) % 1;
+    const u = (t * randi(Rd, 1, 2) / LOOP + Rd()) % 1;   // one or two whole cycles
     const [x, y] = p(i, j, base + u * .9);
-    pen.dot(x + Math.sin(t * .6 + k) * 4, y, rand(Rd, .8, 1.5), 'yellow', .35 + .3 * Math.sin(t * 2 + k));
+    pen.dot(x + Math.sin(t * HZ(.6) + k) * 4, y, rand(Rd, .8, 1.5), 'yellow', .35 + .3 * Math.sin(t * HZ(2) + k));
   }
 }
 
@@ -390,7 +399,7 @@ function developer(pen, t, i0, j0, kb) {
   // ---- the timeline ----
   const roll  = ss((u - 8) / 1.7) - ss((u - 17.2) / 1.7);   // 0 at the desk, 1 shoved back
   const spin  = TAU * 2 * ss((u - 9.9) / 6.9);              // two slow turns, landing back on 0
-  const th    = spin + Math.sin(u * .7) * .05 * roll;       // a little drift while thinking
+  const th    = spin + Math.sin(u * HZ(.7)) * .05 * roll;       // a little drift while thinking
   const typing = (1 - roll) * (1 - ss((u - 7.4) / .6) + ss((u - 18.4) / .6));
 
   // ---- facing: th=0 means facing the desk (away from us, up-right) ----
@@ -403,7 +412,7 @@ function developer(pen, t, i0, j0, kb) {
 
   const ci = i0 + roll * .14, cj = j0 + roll * .95;
   const [bx, by] = p(ci, cj, 0);
-  const seatZ = .47, breathe = Math.sin(t * 1.5) * .5;
+  const seatZ = .47, breathe = Math.sin(t * HZ(1.5)) * .5;
   const seat = [bx, by - seatZ * 32];
   const hip  = [bx, by - seatZ * 32 - 2];
   const shY  = hip[1] - 30 + breathe + roll * 2.5;          // he sinks back a little when thinking
@@ -453,7 +462,7 @@ function developer(pen, t, i0, j0, kb) {
   // ---- arms: keyboard -> chin, cross-faded by `roll` ----
   const head = at(sh, F(.02), [0, -10]);
   const mix = (a, b, k) => [lerp(a[0], b[0], k), lerp(a[1], b[1], k)];
-  const tap = Math.sin(t * 9) * 1.3 * typing;
+  const tap = Math.sin(t * HZ(9)) * 1.3 * typing;
   const kbR = [kb[0] + 7, kb[1] - tap], kbL = [kb[0] - 6, kb[1] + tap];
   const chin = at(head, F(.2), [0, 4]), lap = at(hip, F(.34), R(-.22), [0, -2]);
   const handR = mix(kbR, chin, roll), handL = mix(kbL, lap, roll);
@@ -478,7 +487,7 @@ function developer(pen, t, i0, j0, kb) {
     pen.fill(disc, 'coral', .26);
     pen.line(disc, 'blue', .7, { closed: true, tone: .5, amp: .2 });
     if (faceAmt > .3) {
-      const blink = (t % 4.3) > 4.15 ? .3 : 1;
+      const blink = (t % (LOOP / 5)) > LOOP / 5 - .15 ? .3 : 1;
       for (const m of [-.095, .095]) { const e = at(fc, R(m), [0, -1.5]); pen.line([[e[0] - 1.9, e[1]], [e[0] + 1.9, e[1]]], 'blue', 2.1 * blink, { amp: 0 }); }
       const mo = at(fc, [0, 3.8]);
       pen.line([[mo[0] - 2.2, mo[1]], [mo[0] + 2.2, mo[1] - .6]], 'blue', 1, { amp: .2 });
@@ -520,7 +529,7 @@ function developer(pen, t, i0, j0, kb) {
   if (think > .02) {
     const o = at(head, [14, -16]);
     for (let k = 0; k < 3; k++) {
-      const c = [o[0] + k * 6 + Math.sin(t * 1.2 + k) * 1.5, o[1] - k * 7], rr = (1.4 + k * 1.6) * think;
+      const c = [o[0] + k * 6 + Math.sin(t * HZ(1.2) + k) * 1.5, o[1] - k * 7], rr = (1.4 + k * 1.6) * think;
       pen.shape(pen.circle(c[0], c[1], rr, 12), ['paper', 0], { w: .9 });
     }
     if (think > .6) { const c = [o[0] + 22, o[1] - 20]; pen.dot(c[0], c[1] - 3, 1.5, 'coral', .9); pen.line([[c[0], c[1] + 3], [c[0], c[1] + 6]], 'coral', 1.2, { amp: .2 }); }

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>riso canvas</title>
+<style>
+  :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--paper:#f2eada;--ink:#2d4884}
+  html,body{margin:0;height:100%;overflow:hidden;background:var(--paper)}
+  #stage{display:block;width:100%;height:100%}
+  #hint{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom,0px));
+        font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.04em;color:var(--ink);
+        opacity:.45;pointer-events:none;transition:opacity .8s ease}
+  #hint.gone{opacity:0}
+</style>
+</head><body>
+<canvas id="stage" aria-label="a procedural risograph illustration"></canvas>
+<div id="hint">P saves a PNG</div>
+<script>
+'use strict';
+const MKCANVAS = (w, h) => { const c = document.createElement('canvas'); c.width = Math.ceil(w); c.height = Math.ceil(h); return c; };
+
+/* ---------- paste assets/riso.js here ---------- */
+
+
+/* ============================================================
+   SCENE — replace everything below.
+   Author in a fixed logical space and let the runtime fit it to the window.
+   ============================================================ */
+const CW = 1200, CH = 1500;          // 4:5 reads well in a social feed
+const LOOP = 16;                     // seconds; every motion is a harmonic of this
+
+function drawScene(pen, t) {
+  // back to front. element()/endElement() only matter once you animate.
+  element(CW / 2, CH / 2);
+  pen.fill(pen.blob(CW / 2, CH / 2, 260, 220, 'mass', .28, 12), 'coral', .55);
+  pen.line(pen.blob(CW / 2, CH / 2, 260, 220, 'mass', .28, 12), 'blue', 1.6, { closed: true });
+  endElement();
+
+  const R = stream('petals');
+  for (let k = 0; k < 40; k++) {
+    const a = R() * TAU, rr = Math.sqrt(rand(R, .05, 1));
+    const x = CW / 2 + Math.cos(a) * 230 * rr, y = CH / 2 + Math.sin(a) * 200 * rr;
+    element(x, y);
+    pen.tint(pen.petal(x, y, rand(R, 0, TAU), rand(R, 30, 70), rand(R, 10, 22), rand(R, -8, 8)),
+             pick(R, ['teal', 'yellow', 'blue']), rand(R, .3, .7));
+    endElement();
+  }
+}
+
+/* ============================================================
+   RUNTIME — fits the art to the window, exports a PNG on P.
+   For an animated piece see references/animation.md: bake the static
+   parts, captureSprites() the moving part, and blit per frame.
+   ============================================================ */
+const stage = document.getElementById('stage');
+const ctx = stage.getContext('2d', { alpha: false });
+let W = 0, H = 0, zz = 1, offX = 0, offY = 0;
+
+function render() {
+  W = stage.clientWidth; H = stage.clientHeight;
+  const dpr = Math.min(2, devicePixelRatio || 1);
+  stage.width = Math.round(W * dpr); stage.height = Math.round(H * dpr);
+  zz = Math.min(W / CW, H / CH) * .96 * dpr;
+  offX = (W * dpr - CW * zz) / 2; offY = (H * dpr - CH * zz) / 2;
+  resetInkCaches();
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.fillStyle = PAPER_CSS; ctx.fillRect(0, 0, stage.width, stage.height);
+  ctx.setTransform(zz, 0, 0, zz, offX, offY);
+  drawScene(makePen(ctx, { boil: 0 }), 0);
+  ctx.globalCompositeOperation = 'multiply';
+  ctx.fillStyle = grain(ctx); ctx.fillRect(-CW, -CH, CW * 3, CH * 3);
+  ctx.globalCompositeOperation = 'source-over';
+}
+
+let rt = 0;
+addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(render, 150); });
+addEventListener('keydown', e => {
+  if (e.key.toLowerCase() !== 'p') return;
+  const out = MKCANVAS(CW * 2, CH * 2), c = out.getContext('2d');
+  resetInkCaches();
+  c.fillStyle = PAPER_CSS; c.fillRect(0, 0, CW * 2, CH * 2); c.setTransform(2, 0, 0, 2, 0, 0);
+  drawScene(makePen(c, { boil: 0 }), 0);
+  c.globalCompositeOperation = 'multiply'; c.fillStyle = grain(c); c.fillRect(0, 0, CW, CH);
+  const a = document.createElement('a'); a.download = 'riso.png'; a.href = out.toDataURL('image/png'); a.click();
+  render();
+});
+
+render();
+setTimeout(() => document.getElementById('hint').classList.add('gone'), 5000);
+</script>
+</body></html>

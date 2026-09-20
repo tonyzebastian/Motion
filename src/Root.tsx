@@ -22,6 +22,17 @@ import {
   SundialLaunch30Scene,
   SUNDIAL_LAUNCH_30_DURATION,
 } from "./scenes/SundialLaunch30";
+import {
+  WorldClassAnalystScene,
+  WORLD_CLASS_ANALYST_DURATION,
+} from "./scenes/WorldClassAnalyst";
+import { SundialLogoScene, SUNDIAL_LOGO_DURATION } from "./scenes/SundialLogo";
+import {
+  RisoBouquetScene,
+  RISO_BOUQUET_DURATION,
+  RisoRoomScene,
+  RISO_ROOM_DURATION,
+} from "./scenes/RisoCanvas";
 
 // Each <Composition> is an entry in the sidebar!
 
@@ -165,6 +176,43 @@ export const RemotionRoot: React.FC = () => {
           fps={60}
           width={1920}
           height={1080}
+        />
+        <Composition
+          id="WorldClassAnalyst"
+          component={WorldClassAnalystScene}
+          durationInFrames={WORLD_CLASS_ANALYST_DURATION}
+          fps={60}
+          width={1920}
+          height={1080}
+        />
+        <Composition
+          id="SundialLogo"
+          component={SundialLogoScene}
+          durationInFrames={SUNDIAL_LOGO_DURATION}
+          fps={60}
+          width={1920}
+          height={1080}
+        />
+      </Folder>
+
+      <Folder name="Riso-Canvas">
+        <Composition
+          id="RisoBouquet"
+          component={RisoBouquetScene}
+          durationInFrames={RISO_BOUQUET_DURATION}
+          fps={30}
+          width={1200}
+          height={1500}
+          defaultProps={{}}
+        />
+        <Composition
+          id="RisoRoom"
+          component={RisoRoomScene}
+          durationInFrames={RISO_ROOM_DURATION}
+          fps={30}
+          width={1280}
+          height={900}
+          defaultProps={{}}
         />
       </Folder>
     </>

@@ -17,9 +17,14 @@ After `npm run skills:add` or `npm run skills:update`, run `npm run skills:link`
 | Task | Skill |
 | --- | --- |
 | Unsure / general Remotion work | `remotion-best-practices` |
+| Original procedural film or visual loop | `procedural-film` |
+| Original procedural still or poster | `procedural-still` |
+| Learn and transfer a technique through a short study | `procedural-study` |
+| Four-ink Canvas drawing within either workflow | `riso-canvas` |
 | Writing/editing scene JSX, animation, timing, media, fonts | `remotion-markup` |
 | Captions / subtitles | `remotion-captions` |
 | Render / still / CLI output | `remotion-render` |
+| Frame strips, contact sheet and repeatability review | `node scripts/review-composition.mjs` |
 | Studio preview / CLI flags | `remotion-studio` |
 | Studio editability (`Interactive`, write-back) | `remotion-interactivity` |
 | New composition or blank project | `remotion-create` |

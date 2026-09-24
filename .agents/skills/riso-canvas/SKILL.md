@@ -1,6 +1,6 @@
 ---
 name: riso-canvas
-description: Draw pictures in code — procedural risograph/screen-print illustrations on HTML Canvas 2D, flat or isometric, still or animated. Four inks, rotated halftone screens, plate misregistration, wobbly hand-drawn lines and paper grain, with a sprite-cache system for animating dense scenes at 60fps. Use this whenever the user wants an illustration, poster, scene, character, diorama, isometric room, print-look graphic, or "draw X in JavaScript / with code / procedurally" — and also when they share a riso, screen-print, gouache or hand-drawn illustration and ask to recreate it, or want an existing procedural drawing animated, or exported to video with Remotion. Use it even if they only say "make me a picture of…" and have not mentioned canvas, code or risograph.
+description: Draw or animate procedural risograph and screen-print artwork with the existing four-ink Canvas engine. Use when the user asks for that ink look, wants to extend the RisoCanvas compositions, or explicitly chooses this engine for a still or film.
 ---
 
 # Riso Canvas

@@ -33,6 +33,7 @@ import {
   RisoRoomScene,
   RISO_ROOM_DURATION,
 } from "./scenes/RisoCanvas";
+import {OverlookRisoScene} from "./scenes/OverlookRiso";
 
 // Each <Composition> is an entry in the sidebar!
 
@@ -196,6 +197,14 @@ export const RemotionRoot: React.FC = () => {
       </Folder>
 
       <Folder name="Riso-Canvas">
+        <Composition
+          id="OverlookRiso"
+          component={OverlookRisoScene}
+          durationInFrames={1}
+          fps={30}
+          width={640}
+          height={800}
+        />
         <Composition
           id="RisoBouquet"
           component={RisoBouquetScene}

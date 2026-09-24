@@ -52,7 +52,8 @@
     "lint": "eslint src && tsc",
     "skills:link": "rm -rf .cursor/skills .claude/skills && ln -sfn ../.agents/skills .cursor/skills && ln -sfn ../.agents/skills .claude/skills",
     "skills:add": "remotion skills add && npm run skills:link",
-    "skills:update": "remotion skills update && npm run skills:link"
+    "skills:update": "remotion skills update && npm run skills:link",
+    "review:composition": "node scripts/review-composition.mjs"
   },
   "engines": {
     "node": ">=20"

@@ -63,15 +63,20 @@ Copy the `Introduction/` folder, rename the IDs, and add a `<Folder>` for it in 
 
 ## Reading scene
 
-`Introduction/scenes/ReadingWorlds/` — "For a while now, I've been getting more curious about stories."
+`Introduction/scenes/Reading/` — "For a while now, I've been getting more curious about stories."
 
-An overhead clip of the Dune book: pages flip, then the book closes on the cover. The voice-over is handwritten over the pages with the shared handwriting engine (`shared/handwriting/`, see `docs/handwriting.md`). Each block of text has its own pen settings in `timing.ts` (`PEN`), tuned in the playground Handwriting tool. Pen-line drawings sit on the pages: gulls circle the first spread, and fish swim across the second. A cut-out of the hand is laid back on top, so the hand stays above the drawings. `Introduction/scenes/Reading/` is an earlier text-only version.
+An overhead clip of the Dune book, played straight through (3.3s): pages flip, then the book closes on the cover. The voice-over is handwritten over it with the shared handwriting engine (`shared/handwriting/`, see `docs/handwriting.md`): "for a while now," on the first spread, "I've been getting / more curious about" after the page swipe, and "stories." beside the cover. Each block has its own pen settings in `timing.ts` (`PEN`), tuned in the playground Handwriting tool and sped up to fit the clip.
 
-The clip and hand cut-outs in `public/juny-studios/introduction/reading/` are not committed. To recreate them from the original take:
+The footage is the colour-graded take, which has a slow zoom added in the edit. The page text was placed on the un-zoomed take, so `zoom.ts` stores the zoom for every frame and the scene moves the text with the book. "stories." is placed on screen.
+
+The clip in `public/juny-studios/introduction/reading/` is not committed. To recreate it from the graded export (`Original Videos/reading book.mov`):
 
 ```bash
-npx remotion ffmpeg -i "reading book.mov" -an -vf "scale=1920:-2,format=yuv420p" -c:v libx264 -crf 18 -g 15 -r 30 -movflags +faststart public/juny-studios/introduction/reading/reading-book.mp4
-node scripts/generate-juny-hand-matte.mjs
+npx remotion ffmpeg -i "reading book.mov" -an -vf "scale=1920:-2,format=yuv420p" -c:v libx264 -crf 16 -g 15 -r 30 -movflags +faststart public/juny-studios/introduction/reading/reading-book.mp4
 ```
 
-The matte thresholds were tuned on the ungraded clip. Re-run the script, and nudge its thresholds if needed, after swapping in the colour-graded version.
+If the edit's zoom changes, re-measure it. This needs the un-zoomed take (converted the same way) as the reference:
+
+```bash
+node scripts/track-juny-reading-zoom.mjs ungraded.mp4 public/juny-studios/introduction/reading/reading-book.mp4
+```

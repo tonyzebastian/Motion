@@ -86,7 +86,7 @@ const Block: React.FC<{ block: TextBlock; pen: PenStyle; frame: number; exit?: H
 // The voice-over, handwritten on top of everything.
 // "For a while now," is written across the middle of the book and runs off
 // before the page turns. The rest is written across the next spread and
-// runs off as the book closes, and "stories." is written beside the cover.
+// runs off as the book closes. ("stories." is FinalWord, below.)
 export const VoiceOverText: React.FC<{ frame: number }> = ({ frame }) => {
   const turn = interpolate(frame, [SWIPE.start, SWIPE.end], [0, 1], { ...clamp, easing: easeInOut });
 
@@ -98,7 +98,7 @@ export const VoiceOverText: React.FC<{ frame: number }> = ({ frame }) => {
           pen={PEN.pageOne}
           frame={frame}
           // Runs off just as the page starts to turn.
-          exit={{ type: "unwrite", frame: SWIPE.start - 9, speed: 160 }}
+          exit={{ type: "unwrite", frame: SWIPE.start - 4, speed: 420 }}
         />
       )}
 
@@ -109,19 +109,24 @@ export const VoiceOverText: React.FC<{ frame: number }> = ({ frame }) => {
         // Runs off quickly as the book closes.
         exit={{ type: "unwrite", frame: CLOSE.start + 2, speed: TEXT.size * 3 }}
       />
-
-      <Line
-        words={[{ text: FINAL_WORD.text, frame: FINAL_WORD.frame }]}
-        x={FINAL_WORD.right}
-        y={FINAL_WORD.y}
-        align="right"
-        size={TEXT.finalSize}
-        pen={PEN.final}
-        index={0}
-        first
-        last
-        frame={frame}
-      />
     </>
   );
 };
+
+// "stories.", beside the closed book. It sits on screen rather than in book
+// space: by then the edit has zoomed in far enough that it would run off the
+// left edge.
+export const FinalWord: React.FC<{ frame: number }> = ({ frame }) => (
+  <Line
+    words={[{ text: FINAL_WORD.text, frame: FINAL_WORD.frame }]}
+    x={FINAL_WORD.right}
+    y={FINAL_WORD.y}
+    align="right"
+    size={TEXT.finalSize}
+    pen={PEN.final}
+    index={0}
+    first
+    last
+    frame={frame}
+  />
+);

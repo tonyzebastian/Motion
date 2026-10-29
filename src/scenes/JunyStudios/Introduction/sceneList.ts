@@ -7,10 +7,6 @@ import {
 } from "./scenes/Opening";
 import { Outro, OUTRO_DURATION } from "./scenes/Outro";
 import { Reading, READING_DURATION } from "./scenes/Reading";
-import {
-  ReadingWorlds,
-  READING_WORLDS_DURATION,
-} from "./scenes/ReadingWorlds";
 import { Story, STORY_DURATION } from "./scenes/Story";
 
 // Every Introduction scene, in story order. Adding a scene here gives it its
@@ -19,7 +15,6 @@ export const INTRO_SCENE_IDS = [
   "Opening",
   "OpeningShort",
   "Reading",
-  "ReadingWorlds",
   "Story",
   "Outro",
 ] as const;
@@ -40,11 +35,6 @@ export const INTRO_SCENES: Record<IntroSceneId, SceneDef> = {
     title: "Reading",
     durationInFrames: READING_DURATION,
     component: Reading,
-  },
-  ReadingWorlds: {
-    title: "Reading (Dune worlds)",
-    durationInFrames: READING_WORLDS_DURATION,
-    component: ReadingWorlds,
   },
   Story: { title: "Story", durationInFrames: STORY_DURATION, component: Story },
   Outro: { title: "Outro", durationInFrames: OUTRO_DURATION, component: Outro },

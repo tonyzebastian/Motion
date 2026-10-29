@@ -34,6 +34,7 @@ import {
   RISO_ROOM_DURATION,
 } from "./scenes/RisoCanvas";
 import {OverlookRisoScene} from "./scenes/OverlookRiso";
+import { JunyStudiosCompositions } from "./scenes/JunyStudios";
 
 // Each <Composition> is an entry in the sidebar!
 
@@ -224,6 +225,9 @@ export const RemotionRoot: React.FC = () => {
           defaultProps={{}}
         />
       </Folder>
+
+      {/* Juny Studios — see src/scenes/JunyStudios/README.md */}
+      <JunyStudiosCompositions />
     </>
   );
 };

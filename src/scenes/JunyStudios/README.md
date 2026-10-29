@@ -60,3 +60,18 @@ npx remotion render JunyIntroduction-Full --props='{"scenes":["Opening","Outro"]
 ## Add a new video
 
 Copy the `Introduction/` folder, rename the IDs, and add a `<Folder>` for it in `JunyStudios/index.tsx`.
+
+## Reading scene
+
+`Introduction/scenes/ReadingWorlds/` — "For a while now, I've been getting more curious about stories."
+
+An overhead clip of the Dune book: pages flip, then the book closes on the cover. The voice-over is handwritten over the pages with the shared handwriting engine (`shared/handwriting/`, see `docs/handwriting.md`). Each block of text has its own pen settings in `timing.ts` (`PEN`), tuned in the playground Handwriting tool. Pen-line drawings sit on the pages: gulls circle the first spread, and fish swim across the second. A cut-out of the hand is laid back on top, so the hand stays above the drawings. `Introduction/scenes/Reading/` is an earlier text-only version.
+
+The clip and hand cut-outs in `public/juny-studios/introduction/reading/` are not committed. To recreate them from the original take:
+
+```bash
+npx remotion ffmpeg -i "reading book.mov" -an -vf "scale=1920:-2,format=yuv420p" -c:v libx264 -crf 18 -g 15 -r 30 -movflags +faststart public/juny-studios/introduction/reading/reading-book.mp4
+node scripts/generate-juny-hand-matte.mjs
+```
+
+The matte thresholds were tuned on the ungraded clip. Re-run the script, and nudge its thresholds if needed, after swapping in the colour-graded version.

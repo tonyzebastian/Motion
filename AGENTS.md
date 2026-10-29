@@ -33,6 +33,7 @@ After `npm run skills:add` or `npm run skills:update`, run `npm run skills:link`
 | Media metadata, trim/crop in browser | `remotion-multimedia` |
 | Current API / docs lookup | `remotion-docs` |
 | Upgrade Remotion, related packages, and skills | `remotion-upgrade` |
+| Handwritten text clips (write-on animation, transparent .mov for Resolve) | [docs/handwriting.md](docs/handwriting.md) |
 
 The Remotion MCP is deprecated — use `/remotion-docs` (Algolia search + fetch `https://www.remotion.dev/docs/<page>.md`).
 
@@ -49,7 +50,9 @@ The Remotion MCP is deprecated — use `/remotion-docs` (Algolia search + fetch 
 - `src/Root.tsx` — composition registry (folders + `<Composition>`)
 - `src/scenes/<Name>/` — scene entry + components + constants
 - `public/` — static media
+- `src/scenes/JunyStudios/shared/handwriting/` — handwriting engine (`HandWrite`) and the `HandwritingClip` composition
 - Preview: `npm run dev` · still check: `npx remotion still <id> --scale=0.25 --frame=30`
+- Handwriting clip from a playground tool export: `npm run handwriting -- file.json` (see [docs/handwriting.md](docs/handwriting.md))
 
 ## Docs for agents
 

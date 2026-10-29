@@ -14,6 +14,25 @@ JunyStudios/
     index.tsx            the cut component and its props
 ```
 
+## Assets
+
+Media lives in `public/juny-studios/<video>/<scene>/`. Photos are resized to 960×1200 (4:5). Videos are converted to H.264 MP4 (the renderer can't reliably decode iPhone HEVC) and trimmed to just the part used, e.g.:
+
+```bash
+npx remotion ffmpeg -ss 2.0 -t 4.6 -i IMG_3134.mov -an -vf "scale=1920:-2,format=yuv420p" -c:v libx264 -crf 18 -g 15 -r 30 -movflags +faststart img_3134.mp4
+```
+
+## Opening scene
+
+`Introduction/scenes/Opening/` — "I've mostly been behind the camera."
+
+Two versions share all code and assets: `JunyIntroduction-Opening` (6.5s, video holds a still for 2s) and `JunyIntroduction-OpeningShort` (3s, snappier, video plays straight away). Each pace is a timing set in `timing.ts` (`STANDARD_TIMING`, `SHORT_TIMING`); add another set to make a new pace.
+
+- `timing.ts`: every timing in one place, including each spoken word's frame and position (re-sync here once the voice-over is recorded), the small squares, the video's small size/position, when it expands, its trim, and the page color.
+- `SoundEffects.tsx`: camera-themed sound effects (shutter per photo, tap per word, film advance when the video starts, whoosh + thump on the expand, ticks as the squares hit the corners). Volumes are per version, in each timing set's `sfx`. Sounds are synthesized by `node scripts/generate-juny-opening-sfx.mjs` into `public/juny-studios/introduction/opening/sfx/`; edit and re-run that script to change how they sound.
+- Layout reference: Figma Storyboard file, Scratch page, node 81:1186. Word and square positions are copied from it; type is Reenie Beanie 92px on `#FFF7F2`. The squares start as wobbling blobs and turn into squares as they move to the video corners.
+- `photos.ts`: photo order, position, size, depth and frame-number marks, plus the video source.
+
 ## Export a single scene
 
 Each scene shows up in Studio under `Juny-Studios/Introduction/Introduction-Scenes`:

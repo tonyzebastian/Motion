@@ -33,8 +33,19 @@ After `npm run skills:add` or `npm run skills:update`, run `npm run skills:link`
 | Media metadata, trim/crop in browser | `remotion-multimedia` |
 | Current API / docs lookup | `remotion-docs` |
 | Upgrade Remotion, related packages, and skills | `remotion-upgrade` |
+| Handwritten text clips (write-on animation, transparent .mov for Resolve) | [tools/handwriting/README.md](tools/handwriting/README.md) |
 
 The Remotion MCP is deprecated — use `/remotion-docs` (Algolia search + fetch `https://www.remotion.dev/docs/<page>.md`).
+
+## Handwriting exports
+
+When you're given a `handwriting-*.json` file (an export from the playground Handwriting tool, with an `instructions` field at the top), render it right away without asking:
+
+```bash
+npm run handwriting -- <path to the file>
+```
+
+It writes a transparent ProRes 4444 `.mov` to `out/handwriting/`. Tell the user where it is, and check one frame (`npx remotion still HandwritingClip <out.png> --props=<file> --frame=<n> --image-format=png`) if anything looks off. See [tools/handwriting/README.md](tools/handwriting/README.md).
 
 ## Project hard rules
 
@@ -49,7 +60,9 @@ The Remotion MCP is deprecated — use `/remotion-docs` (Algolia search + fetch 
 - `src/Root.tsx` — composition registry (folders + `<Composition>`)
 - `src/scenes/<Name>/` — scene entry + components + constants
 - `public/` — static media
+- `src/scenes/JunyStudios/shared/handwriting/` — handwriting engine (`HandWrite`) and the `HandwritingClip` composition
 - Preview: `npm run dev` · still check: `npx remotion still <id> --scale=0.25 --frame=30`
+- `tools/handwriting/` — internal Mac tool for handwriting clips: the Studio (`npm run handwriting:studio`), the renderer (`npm run handwriting -- file.json`) and the Resolve menu entry (`npm run resolve:install`). See [its README](tools/handwriting/README.md)
 
 ## Docs for agents
 

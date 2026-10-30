@@ -34,6 +34,13 @@ import {
   RISO_ROOM_DURATION,
 } from "./scenes/RisoCanvas";
 import {OverlookRisoScene} from "./scenes/OverlookRiso";
+import {
+  calculateHandwritingClipMetadata,
+  HANDWRITING_CLIP_DEFAULTS,
+  HandwritingClip,
+  handwritingClipSchema,
+} from "./scenes/JunyStudios/shared/handwriting/HandwritingClip";
+import { JunyStudiosCompositions } from "./scenes/JunyStudios";
 
 // Each <Composition> is an entry in the sidebar!
 
@@ -224,6 +231,25 @@ export const RemotionRoot: React.FC = () => {
           defaultProps={{}}
         />
       </Folder>
+
+      <Folder name="Tools">
+        {/* Handwriting clips (Studio, renderer) — see tools/handwriting/README.md */}
+        <Composition
+          id="HandwritingClip"
+          component={HandwritingClip}
+          schema={handwritingClipSchema}
+          defaultProps={HANDWRITING_CLIP_DEFAULTS}
+          calculateMetadata={calculateHandwritingClipMetadata}
+          // Placeholders; calculateMetadata sets the real size and length.
+          durationInFrames={1}
+          fps={30}
+          width={1920}
+          height={1080}
+        />
+      </Folder>
+
+      {/* Juny Studios — see src/scenes/JunyStudios/README.md */}
+      <JunyStudiosCompositions />
     </>
   );
 };

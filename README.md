@@ -7,6 +7,16 @@ My code-driven playground for animation, video, motion graphics, and procedural 
 - `src/scenes/` — animations and compositions
 - `references/` — visual references and studies
 - `docs/` — process notes and workflows
+
+## Handwriting clips
+
+Type and tune handwritten text in the playground [Handwriting tool](https://play.tonyzeb.com/tools/handwriting), export its settings, then render a transparent ProRes 4444 `.mov` for DaVinci Resolve:
+
+```bash
+npm run handwriting -- ~/Downloads/handwriting-your-text.json
+```
+
+There's also an internal Mac tool, the Handwriting Studio (live preview, renders clips, opens from DaVinci Resolve via Workspace → Scripts → Handwriting → Open Studio). See [tools/handwriting/README.md](./tools/handwriting/README.md).
 - `.agents/skills/` — creative and technical guides
 
 ## Run

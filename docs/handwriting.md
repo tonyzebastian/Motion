@@ -36,6 +36,10 @@ There are two pieces:
      `npm run handwriting -- file.json ~/Movies/title.mov`
    - Add `--png` for a transparent PNG sequence instead.
 
+   Every export starts with an `instructions` field that says exactly this,
+   so you can also hand the file to Claude and it will render it straight
+   away.
+
 4. **In Resolve,** drag the `.mov` onto a track above your footage. The
    transparency comes through on its own, so there's nothing to key. Move,
    scale and colour-correct it like any other clip.

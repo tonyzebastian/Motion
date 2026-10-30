@@ -37,6 +37,16 @@ After `npm run skills:add` or `npm run skills:update`, run `npm run skills:link`
 
 The Remotion MCP is deprecated — use `/remotion-docs` (Algolia search + fetch `https://www.remotion.dev/docs/<page>.md`).
 
+## Handwriting exports
+
+When you're given a `handwriting-*.json` file (an export from the playground Handwriting tool, with an `instructions` field at the top), render it right away without asking:
+
+```bash
+npm run handwriting -- <path to the file>
+```
+
+It writes a transparent ProRes 4444 `.mov` to `out/handwriting/`. Tell the user where it is, and check one frame (`npx remotion still HandwritingClip <out.png> --props=<file> --frame=<n> --image-format=png`) if anything looks off. See [docs/handwriting.md](docs/handwriting.md).
+
 ## Project hard rules
 
 - Drive motion with `useCurrentFrame()` + `interpolate()` / `Easing`. **Never** CSS transitions, CSS animations, or Tailwind `animate-*` classes — they do not render correctly.

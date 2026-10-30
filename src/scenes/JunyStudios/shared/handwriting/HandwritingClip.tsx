@@ -15,6 +15,8 @@ import type { HandFont } from "./types";
 // canvas at 30 fps, and this scales that to the export size and frame rate.
 
 export const handwritingClipSchema = z.object({
+  // Note for whoever is handed the file: how to render it. Not used here.
+  instructions: z.string().optional(),
   // One line per row.
   text: z.string(),
   font: z.string(),

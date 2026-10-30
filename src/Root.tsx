@@ -233,7 +233,7 @@ export const RemotionRoot: React.FC = () => {
       </Folder>
 
       <Folder name="Tools">
-        {/* Handwriting exported from the playground tool — see docs/handwriting.md */}
+        {/* Handwriting clips (Studio, renderer) — see tools/handwriting/README.md */}
         <Composition
           id="HandwritingClip"
           component={HandwritingClip}

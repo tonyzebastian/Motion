@@ -27,6 +27,8 @@ export const handwritingClipSchema = z.object({
   weight: z.number(),
   lineHeight: z.number(),
   align: z.enum(["left", "center", "right"]),
+  // Where the block sits vertically (default: the middle).
+  position: z.enum(["top", "middle", "lower-third", "bottom"]).optional(),
   // Timing, in 30 fps frames like the tool.
   wordGap: z.number(),
   speed: z.number(),
@@ -82,6 +84,8 @@ export const HANDWRITING_CLIP_DEFAULTS: HandwritingClipProps = {
 };
 
 const BASE_W = 1920;
+// Vertical centre of the text block, as a fraction of the frame height.
+const POSITIONS = { top: 0.2, middle: 0.5, "lower-third": 0.76, bottom: 0.86 } as const;
 const BASE_FPS = 30;
 const FIRST_WORD = 6;
 // Time for the text to leave after the exit starts (as in the tool).
@@ -104,8 +108,12 @@ const timeline = (props: HandwritingClipProps) => {
   return { exitFrame, duration };
 };
 
+// Clip length in frames at the clip's own frame rate.
+export const handwritingClipFrames = (props: HandwritingClipProps) =>
+  Math.max(1, Math.ceil((timeline(props).duration * props.fps) / BASE_FPS));
+
 export const calculateHandwritingClipMetadata: CalculateMetadataFunction<HandwritingClipProps> = ({ props }) => ({
-  durationInFrames: Math.max(1, Math.ceil((timeline(props).duration * props.fps) / BASE_FPS)),
+  durationInFrames: handwritingClipFrames(props),
   fps: props.fps,
   width: props.width,
   height: props.height,
@@ -125,7 +133,8 @@ export const HandwritingClip: React.FC<HandwritingClipProps> = (props) => {
     props.fontData ? (props.fontData as HandFont) : props.font in HAND_FONTS ? (props.font as keyof typeof HAND_FONTS) : "reenieBeanie";
   const lineH = props.size * props.lineHeight;
   const x = props.align === "left" ? 160 : props.align === "right" ? BASE_W - 160 : BASE_W / 2;
-  const top = H / 2 - ((lines.length - 1) * lineH) / 2 + props.size * 0.2;
+  const centreY = H * POSITIONS[props.position ?? "middle"];
+  const top = centreY - ((lines.length - 1) * lineH) / 2 + props.size * 0.2;
 
   return (
     <AbsoluteFill style={{ backgroundColor: "transparent" }}>

@@ -65,7 +65,7 @@ Copy the `Introduction/` folder, rename the IDs, and add a `<Folder>` for it in 
 
 `Introduction/scenes/Reading/` — "For a while now, I've been getting more curious about stories."
 
-An overhead clip of the Dune book, played straight through (3.3s): pages flip, then the book closes on the cover. The voice-over is handwritten over it with the shared handwriting engine (`shared/handwriting/`, see `docs/handwriting.md`): "for a while now," on the first spread, "I've been getting / more curious about" after the page swipe, and "stories." beside the cover. Each block has its own pen settings in `timing.ts` (`PEN`), tuned in the playground Handwriting tool and sped up to fit the clip.
+An overhead clip of the Dune book, played straight through (3.3s): pages flip, then the book closes on the cover. The voice-over is handwritten over it with the shared handwriting engine (`shared/handwriting/`, see `tools/handwriting/README.md`): "for a while now," on the first spread, "I've been getting / more curious about" after the page swipe, and "stories." beside the cover. Each block has its own pen settings in `timing.ts` (`PEN`), tuned in the playground Handwriting tool and sped up to fit the clip.
 
 The footage is the colour-graded take, which has a slow zoom added in the edit. The page text was placed on the un-zoomed take, so `zoom.ts` stores the zoom for every frame and the scene moves the text with the book. "stories." is placed on screen.
 

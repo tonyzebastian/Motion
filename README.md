@@ -16,7 +16,7 @@ Type and tune handwritten text in the playground [Handwriting tool](https://play
 npm run handwriting -- ~/Downloads/handwriting-your-text.json
 ```
 
-See [docs/handwriting.md](./docs/handwriting.md).
+There's also an internal Mac tool, the Handwriting Studio (live preview, renders clips, opens from DaVinci Resolve via Workspace → Scripts → Handwriting → Open Studio). See [tools/handwriting/README.md](./tools/handwriting/README.md).
 - `.agents/skills/` — creative and technical guides
 
 ## Run

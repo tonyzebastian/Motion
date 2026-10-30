@@ -29,7 +29,8 @@ they sit, then erase themselves or dissolve.
 To try fonts and settings interactively, use the Handwriting tool in the
 playground repo (`/tools/handwriting`), which runs the same engine. Its
 exports render here as transparent clips through `HandwritingClip`
-(`npm run handwriting -- file.json`); see `docs/handwriting.md`.
+(`npm run handwriting -- file.json`) or the Handwriting Studio; see
+`tools/handwriting/README.md`.
 
 ## Fonts
 
